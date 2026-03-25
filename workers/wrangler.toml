@@ -6,8 +6,8 @@ main = "src/index.ts"
 compatibility_date = "2024-10-20"
 workers_dev = true
 
-# Node.js compatibility
-node_compat = false
+# Node.js compatibility (via compatibility flag)
+compatibility_flags = ["nodejs_compat"]
 
 # Account ID (obtenha em: dash.cloudflare.com -> Workers -> Overview)
 account_id = "ad41f4e2927a6daf25f7c7d6891e31bd"
@@ -92,25 +92,25 @@ vars = { ORIGIN_URL = "https://xiaomidobrasil.com.br", ENVIRONMENT = "staging" }
 # ============================================
 [env.production]
 name = "shopmi-edge-production"
-vars = { ORIGIN_URL = "https://xiaomidobrasil.com.br", ENVIRONMENT = "production" }
+vars = { ORIGIN_URL = "https://xiaomidobrasil.com.br", SHOPIFY_DOMAIN = "uxh1te-1d.myshopify.com", ENVIRONMENT = "production" }
 
 # Route para production
 route = { pattern = "xiaomidobrasil.com.br/*", zone_name = "xiaomidobrasil.com.br" }
 
-# Workers AI em production (se diferente)
-# [env.production.ai]
-# binding = "AI"
+# Workers AI em production
+[env.production.ai]
+binding = "AI"
 
-# KV em production
+# KV e D1 desabilitados temporariamente (token sem permissão KV write)
+# Adicionar depois via dashboard ou token com mais permissões:
 # [[env.production.kv_namespaces]]
 # binding = "CACHE"
-# id = "SEU_KV_PRODUCTION_ID"
-
-# D1 em production
+# id = "8a5f3c63dde44a65b3ef3c5eba6e7fa7"
+#
 # [[env.production.d1_databases]]
 # binding = "DB"
 # database_name = "shopmi-analytics"
-# database_id = "SEU_D1_PRODUCTION_ID"
+# database_id = "e5c15be8-bfa9-427d-ab81-c2f4c7c47212"
 
 # ============================================
 # Build Configuration
