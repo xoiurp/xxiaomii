@@ -82,20 +82,20 @@ database_id = "e5c15be8-bfa9-427d-ab81-c2f4c7c47212"
 # ============================================
 [env.staging]
 name = "shopmi-edge-staging"
-vars = { ORIGIN_URL = "https://mibrasil.com", ENVIRONMENT = "staging" }
+vars = { ORIGIN_URL = "https://xiaomidobrasil.com.br", ENVIRONMENT = "staging" }
 
-# Route para staging (configurar após ter domínio)
-# route = { pattern = "staging.suaoja.com/*", zone_name = "suaoja.com" }
+# Route para staging
+# route = { pattern = "staging.xiaomidobrasil.com.br/*", zone_name = "xiaomidobrasil.com.br" }
 
 # ============================================
 # Production Environment
 # ============================================
 [env.production]
 name = "shopmi-edge-production"
-vars = { ORIGIN_URL = "https://mibrasil.com", ENVIRONMENT = "production" }
+vars = { ORIGIN_URL = "https://xiaomidobrasil.com.br", ENVIRONMENT = "production" }
 
-# Route para production (configurar após ter domínio)
-# route = { pattern = "suaoja.com/*", zone_name = "suaoja.com" }
+# Route para production
+route = { pattern = "xiaomidobrasil.com.br/*", zone_name = "xiaomidobrasil.com.br" }
 
 # Workers AI em production (se diferente)
 # [env.production.ai]
