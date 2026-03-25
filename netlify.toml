@@ -1,0 +1,69 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+  # Configuração do scanner de segredos
+  secrets_scan_enabled = true
+  secrets_scan_omit_paths = [
+    ".next/**/*",
+    ".netlify/**/*",
+    "node_modules/**/*",
+    "prisma/**/*",
+    "scripts/**/*",
+    "*.md",
+    "*.txt",
+    "*.log"
+  ]
+  secrets_scan_omit_keys = [
+    "SHOPIFY_ADMIN_API_TOKEN",
+    "MELHOR_ENVIO_TOKEN",
+    "MELHOR_ENVIO_CLIENT_SECRET",
+    "DATABASE_URL",
+    "NEXTAUTH_SECRET",
+    "GOOGLE_CLIENT_SECRET",
+    "ADMIN_PASSWORD",
+    "CLIENT_PASSWORD"
+  ]
+  
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+  # Configurações específicas do Netlify
+  NETLIFY = "true"
+  # Configurar senhas para seed (serão geradas automaticamente se não definidas)
+  ADMIN_EMAIL = "admin@mibrasil.com"
+  CLIENT_EMAIL = "cliente@teste.com"
+
+[build.processing]
+  skip_processing = false
+  
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+# Configurações de função para suportar SQLite
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@prisma/client", "prisma"]
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
+
+# Headers de segurança
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Headers específicos para API
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"

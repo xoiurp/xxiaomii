@@ -1,0 +1,486 @@
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: smartwatches. Produtos encontrados: (4) [{…}, {…}, {…}, {…}]
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: smartphones. Produtos encontrados: undefined
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: ofertas. Produtos encontrados: undefined
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: casa-inteligente. Produtos encontrados: (4) [{…}, {…}, {…}, {…}]
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: audio. Produtos encontrados: undefined
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: smartwatches. Produtos encontrados: (4) [{…}, {…}, {…}, {…}]
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: smartphones. Produtos encontrados: undefined
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: ofertas. Produtos encontrados: undefined
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: casa-inteligente. Produtos encontrados: (4) [{…}, {…}, {…}, {…}]
+Header.tsx:201 [renderProductGrid] Renderizando produtos para handle: audio. Produtos encontrados: undefined
+ProductClientDetails.tsx:146 ProductClientDetails - product.metafields recebido: [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  {
+    "key": "sw_conectividade_gps",
+    "value": "Não",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_conectividade_wifi",
+    "value": "Não",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_app",
+    "value": "Mi Fitness (Disponível para Android e iOS). Compatível com as versões Android 8.0 ou superior / iOS 12 ou superior.\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_bateria",
+    "value": "233mAh\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_camera",
+    "value": "Função que permite controlar a câmera do smartphone direto na pulseira.",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_chamada",
+    "value": " Alerta vibratório ao receber ligações e notificações ",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_diferenciais",
+    "value": "Personalize livremente entre os mais de 200 mostradores de relógio com watch faces customizadas e animadas\nCronômetro\nTemporizador\nDespertador direto no relógio\nFunção lanterna\nAlerta vibratório ao receber ligações e notificações\nNotificações de mensagens, calendário e aplicativos instalados em seu smartphone\nPrevisão do tempo para os próximos dias\nVisualize os dados simplesmente levantando o pulso\nLocalize meu telefone\nModo Aways On\nModo não pertube (independente do smartphone)\nAtualizações de firmware via OTA",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_embalagem",
+    "value": "Corpo principal da Band 9, Pulseira silicone removível, Dock carregador magnético USB, Manual",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_memoria_local",
+    "value": "164 MB",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_musica",
+    "value": "Controle de música",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_pulseira",
+    "value": "13 - 21cm\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_saude",
+    "value": "Modo exclusivo de pontuação de vitalidade. Entenda o impacto dos seus treinos à sua saúde, com uma pontuação de 0 a 100 no período de 7 dias | Monitoramento do nível de oxigenação do sangue (SpO2), inclusive durante o sono | Monitoramento contínuo de frequência cardíaca (24/7) | Sistema de monitoramento do ciclo menstrual exclusivo para mulheres. Ferramenta que auxilia as mulheres a registrarem e gerenciarem os seus dados menstruais | Análise completa do sono, como sono profundo, leve, R.E.M, tempo acordado e sonecas durante o dia | Assistente de respiração para relaxar totalmente o corpo e a mente | Monitoramento de estresse (aplicativo dispõe de gráficos analíticos sobre níveis de estresse no dia) | Alertas de frequência cardíaca | Alertas de inatividade\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_sensores",
+    "value": "Acelerômetro de 3 eixos | Giroscópio de 3 eixos | Sensor óptico de frequência cardíaca PPG | Saturação de oxigênio no sangue (SpO2)",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_sports",
+    "value": "Mais de 150 modos de treino direto no relógio | Um treinador de corrida diretamente no seu pulso com 10 níveis de treino com diferentes intensidades de acordo com sua própria condição física e experiência atlética | Monitoramento de passos, distâncias e calorias queimadas | Notificações de conclusão do treino e metas | Histórico de exercícios direto na pulseira\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_watter",
+    "value": "5 ATM. Resistente até 50 metros de profundidade.\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_protecao_tela",
+    "value": "Sim",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_recursos_tela",
+    "value": "Sim. Permite que o brilho da tela se ajuste automaticamente de acordo com o ambiente em uso.",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_resolucao",
+    "value": "(192×490)",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_tamanho_tela",
+    "value": "1,62\" ",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_tela_sensivel_ao_toque",
+    "value": "Sim",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_tipo_tela",
+    "value": "AMOLED 1,62\" , , Always-On Display, vidro temperado 2.5D",
+    "namespace": "custom"
+  }
+]
+ProductClientDetails.tsx:162 ProductClientDetails - useCustomRemBaseMetafieldValue: undefined
+ProductClientDetails.tsx:163 ProductClientDetails - remBaseFontSizeMetafieldValue: undefined
+ProductClientDetails.tsx:164 ProductClientDetails - mobileFontSizeValue: undefined
+ProductClientDetails.tsx:177 ProductClientDetails - Condição useCustomRemBaseMetafieldValue === 'true' é FALSA ou metafield ausente
+ProductClientDetails.tsx:180 ProductClientDetails - passPreserveOriginalStyles final: true
+ProductClientDetails.tsx:181 ProductClientDetails - passFontSizeMetafield final: undefined
+ProductClientDetails.tsx:298 selectedVariant atualizado: {id: 'gid://shopify/ProductVariant/46746948862181', title: 'Preto', price: {…}, compareAtPrice: {…}, availableForSale: true, …}availableForSale: truecolorHex: "#0d0c0c"compareAtPrice: {amount: '363.0', currencyCode: 'BRL'}id: "gid://shopify/ProductVariant/46746948862181"mediavariant: {references: {…}}metafield: {value: '#0d0c0c'}price: {amount: '315.0', currencyCode: 'BRL'}quantityAvailable: 38selectedOptions: [{…}]title: "Preto"variantImages: Array(5)0: {transformedSrc: 'https://cdn.shopify.com/s/files/1/0742/3960/7013/f…s/mi_band_9_preto_1000x1000.jpg.webp?v=1747010176', altText: 'Mi Smart Band 9'}1: {transformedSrc: 'https://cdn.shopify.com/s/files/1/0742/3960/7013/f…es/mi_band_9_preta_10_1000x1000.webp?v=1747010361', altText: 'Mi Smart Band 9'}2: {transformedSrc: 'https://cdn.shopify.com/s/files/1/0742/3960/7013/f…2.mi_band_9_preto_1000x1000.jpg.webp?v=1747010176', altText: 'Mi Smart Band 9'}3: {transformedSrc: 'https://cdn.shopify.com/s/files/1/0742/3960/7013/files/mi_band_9_preta_9_1000x1000.webp?v=1747010361', altText: 'Mi Smart Band 9'}4: {transformedSrc: 'https://cdn.shopify.com/s/files/1/0742/3960/7013/files/mi_band_9_preta_8_1000x1000.webp?v=1747010361', altText: 'Mi Smart Band 9'}length: 5[[Prototype]]: Array(0)[[Prototype]]: Object
+ProductClientDetails.tsx:146 ProductClientDetails - product.metafields recebido: [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  {
+    "key": "sw_conectividade_gps",
+    "value": "Não",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_conectividade_wifi",
+    "value": "Não",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_app",
+    "value": "Mi Fitness (Disponível para Android e iOS). Compatível com as versões Android 8.0 ou superior / iOS 12 ou superior.\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_bateria",
+    "value": "233mAh\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_camera",
+    "value": "Função que permite controlar a câmera do smartphone direto na pulseira.",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_chamada",
+    "value": " Alerta vibratório ao receber ligações e notificações ",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_diferenciais",
+    "value": "Personalize livremente entre os mais de 200 mostradores de relógio com watch faces customizadas e animadas\nCronômetro\nTemporizador\nDespertador direto no relógio\nFunção lanterna\nAlerta vibratório ao receber ligações e notificações\nNotificações de mensagens, calendário e aplicativos instalados em seu smartphone\nPrevisão do tempo para os próximos dias\nVisualize os dados simplesmente levantando o pulso\nLocalize meu telefone\nModo Aways On\nModo não pertube (independente do smartphone)\nAtualizações de firmware via OTA",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_embalagem",
+    "value": "Corpo principal da Band 9, Pulseira silicone removível, Dock carregador magnético USB, Manual",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_memoria_local",
+    "value": "164 MB",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_musica",
+    "value": "Controle de música",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_pulseira",
+    "value": "13 - 21cm\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_saude",
+    "value": "Modo exclusivo de pontuação de vitalidade. Entenda o impacto dos seus treinos à sua saúde, com uma pontuação de 0 a 100 no período de 7 dias | Monitoramento do nível de oxigenação do sangue (SpO2), inclusive durante o sono | Monitoramento contínuo de frequência cardíaca (24/7) | Sistema de monitoramento do ciclo menstrual exclusivo para mulheres. Ferramenta que auxilia as mulheres a registrarem e gerenciarem os seus dados menstruais | Análise completa do sono, como sono profundo, leve, R.E.M, tempo acordado e sonecas durante o dia | Assistente de respiração para relaxar totalmente o corpo e a mente | Monitoramento de estresse (aplicativo dispõe de gráficos analíticos sobre níveis de estresse no dia) | Alertas de frequência cardíaca | Alertas de inatividade\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_sensores",
+    "value": "Acelerômetro de 3 eixos | Giroscópio de 3 eixos | Sensor óptico de frequência cardíaca PPG | Saturação de oxigênio no sangue (SpO2)",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_sports",
+    "value": "Mais de 150 modos de treino direto no relógio | Um treinador de corrida diretamente no seu pulso com 10 níveis de treino com diferentes intensidades de acordo com sua própria condição física e experiência atlética | Monitoramento de passos, distâncias e calorias queimadas | Notificações de conclusão do treino e metas | Histórico de exercícios direto na pulseira\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_others_watter",
+    "value": "5 ATM. Resistente até 50 metros de profundidade.\n",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_protecao_tela",
+    "value": "Sim",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_recursos_tela",
+    "value": "Sim. Permite que o brilho da tela se ajuste automaticamente de acordo com o ambiente em uso.",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_resolucao",
+    "value": "(192×490)",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_tamanho_tela",
+    "value": "1,62\" ",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_tela_sensivel_ao_toque",
+    "value": "Sim",
+    "namespace": "custom"
+  },
+  {
+    "key": "sw_tipo_tela",
+    "value": "AMOLED 1,62\" , , Always-On Display, vidro temperado 2.5D",
+    "namespace": "custom"
+  }
+]
+ProductClientDetails.tsx:162 ProductClientDetails - useCustomRemBaseMetafieldValue: undefined
+ProductClientDetails.tsx:163 ProductClientDetails - remBaseFontSizeMetafieldValue: undefined
+ProductClientDetails.tsx:164 ProductClientDetails - mobileFontSizeValue: undefined
+ProductClientDetails.tsx:177 ProductClientDetails - Condição useCustomRemBaseMetafieldValue === 'true' é FALSA ou metafield ausente
+ProductClientDetails.tsx:180 ProductClientDetails - passPreserveOriginalStyles final: true
+ProductClientDetails.tsx:181 ProductClientDetails - passFontSizeMetafield final: undefined
+ProductClientDetails.tsx:298 selectedVariant atualizado: {id: 'gid://shopify/ProductVariant/46746948862181', title: 'Preto', price: {…}, compareAtPrice: {…}, availableForSale: true, …}
+IsolatedHtmlContentTest.tsx:30 IsolatedHtmlContentTest - preserveOriginalStyles recebido: true
+IsolatedHtmlContentTest.tsx:31 IsolatedHtmlContentTest - fontSizeMetafield recebido: undefined
+IsolatedHtmlContentTest.tsx:32 IsolatedHtmlContentTest - mobileFontSizeMetafield recebido: undefined
+IsolatedHtmlContentTest.tsx:30 IsolatedHtmlContentTest - preserveOriginalStyles recebido: true
+IsolatedHtmlContentTest.tsx:31 IsolatedHtmlContentTest - fontSizeMetafield recebido: undefined
+IsolatedHtmlContentTest.tsx:32 IsolatedHtmlContentTest - mobileFontSizeMetafield recebido: undefined
+dialog.tsx:543 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. Error Component Stack
+    at DescriptionWarning (dialog.tsx:534:66)
+    at eval (dialog.tsx:386:13)
+    at eval (dialog.tsx:261:58)
+    at Presence (presence.tsx:12:11)
+    at eval (dialog.tsx:236:64)
+    at eval (slot.tsx:68:13)
+    at eval (slot.tsx:15:13)
+    at eval (index.mjs:28:13)
+    at eval (portal.tsx:22:22)
+    at Presence (presence.tsx:12:11)
+    at Provider (index.mjs:27:15)
+    at DialogPortal (dialog.tsx:146:11)
+    at SheetPortal (sheet.tsx:26:6)
+    at SheetContent (sheet.tsx:48:3)
+    at Provider (index.mjs:27:15)
+    at Dialog (dialog.tsx:52:5)
+    at Sheet (sheet.tsx:9:21)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at header (<anonymous>)
+    at Header (Header.tsx:64:27)
+    at ConditionalHeader (ConditionalHeader.tsx:7:31)
+    at div (<anonymous>)
+    at CartProvider (CartContext.tsx:74:32)
+    at AuthContextProvider (AuthContext.tsx:35:32)
+    at SessionProvider (react.js:226:13)
+    at AuthProvider (AuthContext.tsx:71:32)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.tsx:48:5)
+    at RedirectBoundary (redirect-boundary.tsx:79:9)
+    at NotFoundErrorBoundary (not-found-boundary.tsx:32:5)
+    at NotFoundBoundary (not-found-boundary.tsx:117:9)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.tsx:20:3)
+    at ReactDevOverlay (ReactDevOverlay.tsx:98:3)
+    at HotReload (hot-reloader-client.tsx:452:3)
+    at Router (app-router.tsx:300:9)
+    at ErrorBoundaryHandler (error-boundary.tsx:68:11)
+    at ErrorBoundary (error-boundary.tsx:171:9)
+    at AppRouter (app-router.tsx:716:3)
+    at ServerRoot (app-index.tsx:126:13)
+    at Root (app-index.tsx:133:17)
+overrideMethod @ hook.js:608
+eval @ dialog.tsx:543
+commitHookEffectListMount @ react-dom.development.js:21102
+commitHookPassiveMountEffects @ react-dom.development.js:23154
+commitPassiveMountOnFiber @ react-dom.development.js:23259
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23267
+commitPassiveMountEffects @ react-dom.development.js:23225
+flushPassiveEffectsImpl @ react-dom.development.js:26497
+flushPassiveEffects @ react-dom.development.js:26438
+commitRootImpl @ react-dom.development.js:26337
+commitRoot @ react-dom.development.js:26077
+performSyncWorkOnRoot @ react-dom.development.js:24925
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+dialog.tsx:543 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+overrideMethod @ hook.js:608
+eval @ dialog.tsx:543
+commitHookEffectListMount @ react-dom.development.js:21102
+invokePassiveEffectMountInDEV @ react-dom.development.js:23980
+invokeEffectsInDev @ react-dom.development.js:26852
+legacyCommitDoubleInvokeEffectsInDEV @ react-dom.development.js:26835
+commitDoubleInvokeEffectsInDEV @ react-dom.development.js:26816
+flushPassiveEffectsImpl @ react-dom.development.js:26514
+flushPassiveEffects @ react-dom.development.js:26438
+commitRootImpl @ react-dom.development.js:26337
+commitRoot @ react-dom.development.js:26077
+performSyncWorkOnRoot @ react-dom.development.js:24925
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+GlobalCheckoutInterceptor.tsx:43 Fetch finished loading: POST "http://localhost:3002/api/checkout/yampi".
+onClick @ GlobalCheckoutInterceptor.tsx:43

@@ -1,0 +1,336 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String?
+  passwordHash       String?   @map("password_hash")
+  role               Role      @default(CLIENT)
+  shopifyCustomerId  String?   @map("shopify_customer_id")
+  emailVerified      DateTime? @map("email_verified")
+  image              String?
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  accounts        Account[]
+  sessions        Session[]
+  customerProfile CustomerProfile?
+  addresses       Address[]
+  supportTickets  SupportTicket[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model CustomerProfile {
+  id          String    @id @default(cuid())
+  userId      String    @unique @map("user_id")
+  phone       String?
+  birthDate   DateTime? @map("birth_date")
+  cpf         String?
+  preferences Json?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("customer_profiles")
+}
+
+model Address {
+  id           String      @id @default(cuid())
+  userId       String      @map("user_id")
+  type         AddressType @default(SHIPPING)
+  isDefault    Boolean     @default(false) @map("is_default")
+  street       String
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String
+  state        String
+  postalCode   String      @map("postal_code")
+  country      String      @default("BR")
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+// Modelo para armazenar dados exportados dos clientes do Shopify
+model ShopifyCustomer {
+  id                    String   @id @default(cuid())
+  shopifyId             String   @unique @map("shopify_id") // ID do cliente no Shopify
+  email                 String?
+  firstName             String?  @map("first_name")
+  lastName              String?  @map("last_name")
+  phone                 String?
+  acceptsMarketing      Boolean  @default(false) @map("accepts_marketing")
+  acceptsMarketingUpdatedAt DateTime? @map("accepts_marketing_updated_at")
+  marketingOptInLevel   String?  @map("marketing_opt_in_level")
+  ordersCount           Int      @default(0) @map("orders_count")
+  totalSpent            Float    @default(0) @map("total_spent")
+  averageOrderValue     Float    @default(0) @map("average_order_value")
+  currency              String   @default("BRL")
+  tags                  String?  // Tags separadas por vírgula
+  note                  String?  // Notas sobre o cliente
+  state                 String   @default("disabled") // enabled, disabled, invited, declined
+  taxExempt             Boolean  @default(false) @map("tax_exempt")
+  taxExemptions         String?  @map("tax_exemptions") // JSON string
+  emailMarketingConsent Json?    @map("email_marketing_consent")
+  smsMarketingConsent   Json?    @map("sms_marketing_consent")
+  adminGraphqlApiId     String?  @map("admin_graphql_api_id")
+  defaultAddress        Json?    @map("default_address") // JSON com endereço padrão
+  addresses             Json?    // JSON com todos os endereços
+  createdAt             DateTime @map("created_at")
+  updatedAt             DateTime @map("updated_at")
+  lastSyncAt            DateTime @default(now()) @map("last_sync_at") // Quando foi sincronizado
+  
+  @@map("shopify_customers")
+}
+
+// Modelo para armazenar pedidos do Shopify
+model ShopifyOrder {
+  id                    String    @id @default(cuid())
+  shopifyId             String    @unique @map("shopify_id") // ID do pedido no Shopify
+  orderNumber           Int       @map("order_number") // Número do pedido (#1001, #1002, etc)
+  name                  String    // Nome do pedido (#1001)
+  email                 String?
+  phone                 String?
+  customerId            String?   @map("customer_id") // ID do cliente no Shopify
+  financialStatus       String    @default("pending") @map("financial_status") // pending, authorized, paid, etc
+  fulfillmentStatus     String?   @map("fulfillment_status") // fulfilled, partial, null
+  currency              String    @default("BRL")
+  currentSubtotalPrice  Float     @default(0) @map("current_subtotal_price")
+  currentTotalPrice     Float     @default(0) @map("current_total_price")
+  totalPrice            Float     @default(0) @map("total_price")
+  subtotalPrice         Float     @default(0) @map("subtotal_price")
+  totalDiscounts        Float     @default(0) @map("total_discounts")
+  totalTax              Float     @default(0) @map("total_tax")
+  totalShippingPrice    Float     @default(0) @map("total_shipping_price")
+  billingAddress        Json?     @map("billing_address") // Endereço de cobrança
+  shippingAddress       Json?     @map("shipping_address") // Endereço de envio
+  lineItems             Json?     @map("line_items") // Produtos do pedido
+  shippingLines         Json?     @map("shipping_lines") // Métodos de envio
+  fulfillments          Json?     // Informações de fulfillment e rastreio
+  tags                  String?
+  note                  String?
+  gateway               String?   // Forma de pagamento
+  test                  Boolean   @default(false) // Se é pedido de teste
+  browserIp             String?   @map("browser_ip")
+  cancelReason          String?   @map("cancel_reason")
+  cancelledAt           DateTime? @map("cancelled_at")
+  closedAt              DateTime? @map("closed_at")
+  processedAt           DateTime? @map("processed_at")
+  createdAt             DateTime  @map("created_at")
+  updatedAt             DateTime  @map("updated_at")
+  lastSyncAt            DateTime  @default(now()) @map("last_sync_at")
+
+  @@map("shopify_orders")
+}
+
+// Modelo para controlar as exportações/sincronizações
+model CustomerSyncLog {
+  id            String   @id @default(cuid())
+  syncType      String   // "manual", "automatic", "scheduled"
+  status        String   // "running", "completed", "failed"
+  recordsTotal  Int      @default(0) @map("records_total")
+  recordsAdded  Int      @default(0) @map("records_added")
+  recordsUpdated Int     @default(0) @map("records_updated")
+  recordsSkipped Int     @default(0) @map("records_skipped")
+  errorMessage  String?  @map("error_message")
+  startedAt     DateTime @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  duration      Int?     // Duração em segundos
+
+  @@map("customer_sync_logs")
+}
+
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("newsletter_subscriptions")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+}
+
+// ==========================================
+// Support Tickets
+// ==========================================
+
+model SupportTicket {
+  id          String              @id @default(cuid())
+  userId      String?             @map("user_id")
+  name        String
+  email       String
+  phone       String?
+  subject     String
+  category    SupportCategory     @default(OTHER)
+  message     String
+  status      TicketStatus        @default(OPEN)
+  priority    TicketPriority      @default(MEDIUM)
+  orderNumber String?             @map("order_number")
+  adminNotes  String?             @map("admin_notes")
+  resolvedAt  DateTime?           @map("resolved_at")
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("support_tickets")
+}
+
+enum SupportCategory {
+  ORDER
+  PRODUCT
+  SHIPPING
+  PAYMENT
+  RETURN
+  ACCOUNT
+  OTHER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// ==========================================
+// AppMax Integration Models
+// ==========================================
+
+// Credenciais do merchant AppMax (geradas na instalacao do app)
+model AppmaxMerchant {
+  id              String   @id @default(cuid())
+  appId           String   @map("app_id")
+  externalKey     String   @map("external_key")
+  externalId      String   @unique @map("external_id") // UUID gerado por nos no health check
+  clientId        String   @map("client_id")            // Credencial do merchant
+  clientSecret    String   @map("client_secret")        // Credencial do merchant
+  isActive        Boolean  @default(true) @map("is_active")
+  installedAt     DateTime @default(now()) @map("installed_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  orders AppmaxOrder[]
+
+  @@map("appmax_merchants")
+}
+
+// Pedidos criados via AppMax
+model AppmaxOrder {
+  id                String    @id @default(cuid())
+  merchantId        String    @map("merchant_id")
+  appmaxOrderId     Int       @map("appmax_order_id")       // ID do pedido na AppMax
+  appmaxCustomerId  Int       @map("appmax_customer_id")    // ID do cliente na AppMax
+  status            String    @default("pendente")           // pendente, aprovado, cancelado, estornado, etc.
+  paymentMethod     String?   @map("payment_method")         // creditcard, pix, boleto
+  installments      Int       @default(1)
+  productsValue     Int       @default(0) @map("products_value")   // Em centavos
+  shippingValue     Int       @default(0) @map("shipping_value")   // Em centavos
+  discountValue     Int       @default(0) @map("discount_value")   // Em centavos
+  totalPaid         Int       @default(0) @map("total_paid")       // Em centavos
+  customerName      String?   @map("customer_name")
+  customerEmail     String?   @map("customer_email")
+  customerDocument  String?   @map("customer_document")      // CPF/CNPJ
+  customerPhone     String?   @map("customer_phone")
+  shippingAddress   Json?     @map("shipping_address")
+  lineItems         Json?     @map("line_items")
+  pixQrCode         String?   @map("pix_qr_code")            // QR code para pagamento PIX
+  pixEmvCode        String?   @map("pix_emv_code")            // Codigo copia-e-cola PIX
+  boletoUrl         String?   @map("boleto_url")              // URL do boleto PDF
+  boletoBarcode     String?   @map("boleto_barcode")          // Linha digitavel do boleto
+  trackingCode      String?   @map("tracking_code")           // Codigo de rastreio
+  upsellHash        String?   @map("upsell_hash")             // Hash para upsell
+  paidAt            DateTime? @map("paid_at")
+  refundedAt        DateTime? @map("refunded_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  merchant AppmaxMerchant @relation(fields: [merchantId], references: [id])
+
+  @@unique([appmaxOrderId])
+  @@map("appmax_orders")
+}
+
+// Log de webhooks recebidos da AppMax
+model AppmaxWebhookLog {
+  id          String   @id @default(cuid())
+  event       String                          // Tipo do evento
+  orderId     Int?     @map("order_id")       // ID do pedido AppMax
+  status      String?                          // Status recebido
+  payload     Json                             // Payload completo recebido
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@map("appmax_webhook_logs")
+}

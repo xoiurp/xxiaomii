@@ -1,0 +1,574 @@
+[ShopPage] Generated priceQuery: undefined
+[ShopPage] Sort options: { sortKey: 'RELEVANCE', reverse: false }
+[ShopifyLib GetProducts] productArgsString: first: $first, sortKey: $sortKey, reverse: $reverse
+[ShopifyLib GetProducts] GQL Variables: {
+  "first": 12,
+  "sortKey": "RELEVANCE",
+  "reverse": false
+}
+Erro ao buscar produtos: GraphQLError: Syntax Error: Unexpected character: "/".
+    at syntaxError (webpack-internal:///(rsc)/./node_modules/graphql/error/syntaxError.mjs:13:10)
+    at readNextToken (webpack-internal:///(rsc)/./node_modules/graphql/language/lexer.mjs:340:78)
+    at Lexer.lookahead (webpack-internal:///(rsc)/./node_modules/graphql/language/lexer.mjs:76:29)
+    at Lexer.advance (webpack-internal:///(rsc)/./node_modules/graphql/language/lexer.mjs:59:38)
+    at Parser.advanceLexer (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:1519:31)
+    at Parser.expectToken (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:1376:12)
+    at Parser.many (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:1490:10)
+    at Parser.parseSelectionSet (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:326:24)
+    at Parser.parseField (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:371:16)
+    at Parser.parseSelection (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:343:14)
+    at Parser.many (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:1494:26)
+    at Parser.parseSelectionSet (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:326:24)
+    at Parser.parseOperationDefinition (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:256:26)      
+    at Parser.parseDefinition (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:210:23)
+    at Parser.many (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:1494:26)
+    at Parser.parseDocument (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:130:25)
+    at parse (webpack-internal:///(rsc)/./node_modules/graphql/language/parser.mjs:33:27)
+    at parseDocument (webpack-internal:///(rsc)/./node_modules/graphql-tag/lib/index.js:76:68)
+    at gql (webpack-internal:///(rsc)/./node_modules/graphql-tag/lib/index.js:105:12)
+    at getProducts (webpack-internal:///(rsc)/./src/lib/shopify.ts:191:71)
+    at ShopPage (webpack-internal:///(rsc)/./src/app/shop/page.tsx:123:88)
+    at e_ (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:264164)
+    at e (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:268296)
+    at eF (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:268784)
+    at eq (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:274748)
+    at ej (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:264992)
+    at e_ (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:264034)
+    at e (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:268296)
+    at eF (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:268784)
+    at E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:266015
+    at Array.toJSON (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:266479)
+    at stringify (<anonymous>)
+    at eq (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:274847)
+    at eJ (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:275365)
+    at Timeout._onTimeout (E:\Backup\Área de Trabalho\XIAOMI\project\project\shopmi\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:265152)
+    at listOnTimeout (node:internal/timers:573:17)
+    at process.processTimers (node:internal/timers:514:7) {
+  path: undefined,
+  locations: [ { line: 3, column: 71 } ],
+  extensions: [Object: null prototype] {}
+}
+Usando dados mockados para produtos devido a erro na API
+ GET /shop 200 in 2590ms
+ ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+ ✓ Compiled /_not-found in 464ms (1083 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 736ms
+ ✓ Compiled /favicon.ico in 221ms (734 modules)
+ GET /favicon.ico 200 in 332ms
+ ✓ Compiled /api/admin/collections in 358ms (760 modules)
+Resposta completa da API Admin (getCollections): {
+  "data": {
+    "collections": {
+      "edges": [
+        {
+          "node": {
+            "id": "gid://shopify/Collection/462402093285",
+            "title": "Smartwatches",
+            "handle": "smartwatches",
+            "descriptionHtml": "",
+            "image": {
+              "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/312_banner638677812541882611.webp?v=1744132133",
+              "altText": null,
+              "__typename": "Image"
+            },
+            "subcollectionsMetafield": {
+              "key": "subcollections",
+              "value": "[\"gid://shopify/Collection/470980133093\"]",
+              "__typename": "Metafield"
+            },
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/462402158821",
+            "title": "Smartphones",
+            "handle": "smartphones",
+            "descriptionHtml": "",
+            "image": {
+              "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/311_banner638677812398199251.webp?v=1744132161",
+              "altText": null,
+              "__typename": "Image"
+            },
+            "subcollectionsMetafield": {
+              "key": "subcollections",
+              "value": "[\"gid://shopify/Collection/470801121509\",\"gid://shopify/Collection/470980198629\"]",
+              "__typename": "Metafield"
+            },
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/462402355429",
+            "title": "Ofertas",
+            "handle": "ofertas",
+            "descriptionHtml": "",
+            "image": {
+              "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/313_banner638677812925425542.webp?v=1744132548",
+              "altText": null,
+              "__typename": "Image"
+            },
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470451880165",
+            "title": "Casa Inteligente",
+            "handle": "casa-inteligente",
+            "descriptionHtml": "<p>Casa inteligente</p>",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470801121509",
+            "title": "Carregadores",
+            "handle": "carregadores",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "false",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470803120357",
+            "title": "Áudio",
+            "handle": "audio",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470980133093",
+            "title": "Acessórios para Smartwatch",
+            "handle": "acessorios-para-smartwatch",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "false",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470980198629",
+            "title": "Acessórios para Smartphones",
+            "handle": "acessorios-para-smartphones",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "false",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        }
+      ],
+      "__typename": "CollectionConnection"
+    }
+  },
+  "loading": false,
+  "networkStatus": 7
+}
+Resposta completa da API Admin (getCollections): {
+  "data": {
+    "collections": {
+      "edges": [
+        {
+          "node": {
+            "id": "gid://shopify/Collection/462402093285",
+            "title": "Smartwatches",
+            "handle": "smartwatches",
+            "descriptionHtml": "",
+            "image": {
+              "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/312_banner638677812541882611.webp?v=1744132133",
+              "altText": null,
+              "__typename": "Image"
+            },
+            "subcollectionsMetafield": {
+              "key": "subcollections",
+              "value": "[\"gid://shopify/Collection/470980133093\"]",
+              "__typename": "Metafield"
+            },
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/462402158821",
+            "title": "Smartphones",
+            "handle": "smartphones",
+            "descriptionHtml": "",
+            "image": {
+              "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/311_banner638677812398199251.webp?v=1744132161",
+              "altText": null,
+              "__typename": "Image"
+            },
+            "subcollectionsMetafield": {
+              "key": "subcollections",
+              "value": "[\"gid://shopify/Collection/470801121509\",\"gid://shopify/Collection/470980198629\"]",
+              "__typename": "Metafield"
+            },
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/462402355429",
+            "title": "Ofertas",
+            "handle": "ofertas",
+            "descriptionHtml": "",
+            "image": {
+              "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/313_banner638677812925425542.webp?v=1744132548",
+              "altText": null,
+              "__typename": "Image"
+            },
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470451880165",
+            "title": "Casa Inteligente",
+            "handle": "casa-inteligente",
+            "descriptionHtml": "<p>Casa inteligente</p>",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470801121509",
+            "title": "Carregadores",
+            "handle": "carregadores",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "false",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470803120357",
+            "title": "Áudio",
+            "handle": "audio",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "true",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470980133093",
+            "title": "Acessórios para Smartwatch",
+            "handle": "acessorios-para-smartwatch",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "false",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        },
+        {
+          "node": {
+            "id": "gid://shopify/Collection/470980198629",
+            "title": "Acessórios para Smartphones",
+            "handle": "acessorios-para-smartphones",
+            "descriptionHtml": "",
+            "image": null,
+            "subcollectionsMetafield": null,
+            "mainCollectionMetafield": {
+              "key": "main_collection",
+              "value": "false",
+              "type": "boolean",
+              "__typename": "Metafield"
+            },
+            "__typename": "Collection"
+          },
+          "__typename": "CollectionEdge"
+        }
+      ],
+      "__typename": "CollectionConnection"
+    }
+  },
+  "loading": false,
+  "networkStatus": 7
+}
+Coleções com subcoleções populadas: [
+  {
+    "id": "gid://shopify/Collection/462402093285",
+    "title": "Smartwatches",
+    "handle": "smartwatches",
+    "descriptionHtml": "",
+    "image": {
+      "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/312_banner638677812541882611.webp?v=1744132133",
+      "altText": null,
+      "__typename": "Image"
+    },
+    "__typename": "Collection",
+    "subcollections": [
+      {
+        "id": "gid://shopify/Collection/470980133093",
+        "title": "Acessórios para Smartwatch",
+        "handle": "acessorios-para-smartwatch",
+        "image": null,
+        "__typename": "Collection"
+      }
+    ]
+  },
+  {
+    "id": "gid://shopify/Collection/462402158821",
+    "title": "Smartphones",
+    "handle": "smartphones",
+    "descriptionHtml": "",
+    "image": {
+      "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/311_banner638677812398199251.webp?v=1744132161",
+      "altText": null,
+      "__typename": "Image"
+    },
+    "__typename": "Collection",
+    "subcollections": [
+      {
+        "id": "gid://shopify/Collection/470801121509",
+        "title": "Carregadores",
+        "handle": "carregadores",
+        "image": null,
+        "__typename": "Collection"
+      },
+      {
+        "id": "gid://shopify/Collection/470980198629",
+        "title": "Acessórios para Smartphones",
+        "handle": "acessorios-para-smartphones",
+        "image": null,
+        "__typename": "Collection"
+      }
+    ]
+  },
+  {
+    "id": "gid://shopify/Collection/462402355429",
+    "title": "Ofertas",
+    "handle": "ofertas",
+    "descriptionHtml": "",
+    "image": {
+      "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/313_banner638677812925425542.webp?v=1744132548",
+      "altText": null,
+      "__typename": "Image"
+    },
+    "__typename": "Collection",
+    "subcollections": []
+  },
+  {
+    "id": "gid://shopify/Collection/470451880165",
+    "title": "Casa Inteligente",
+    "handle": "casa-inteligente",
+    "descriptionHtml": "<p>Casa inteligente</p>",
+    "image": null,
+    "__typename": "Collection",
+    "subcollections": []
+  },
+  {
+    "id": "gid://shopify/Collection/470803120357",
+    "title": "Áudio",
+    "handle": "audio",
+    "descriptionHtml": "",
+    "image": null,
+    "__typename": "Collection",
+    "subcollections": []
+  }
+]
+Coleções com subcoleções populadas: [
+  {
+    "id": "gid://shopify/Collection/462402093285",
+    "title": "Smartwatches",
+    "handle": "smartwatches",
+    "descriptionHtml": "",
+    "image": {
+      "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/312_banner638677812541882611.webp?v=1744132133",
+      "altText": null,
+      "__typename": "Image"
+    },
+    "__typename": "Collection",
+    "subcollections": [
+      {
+        "id": "gid://shopify/Collection/470980133093",
+        "title": "Acessórios para Smartwatch",
+        "handle": "acessorios-para-smartwatch",
+        "image": null,
+        "__typename": "Collection"
+      }
+    ]
+  },
+  {
+    "id": "gid://shopify/Collection/462402158821",
+    "title": "Smartphones",
+    "handle": "smartphones",
+    "descriptionHtml": "",
+    "image": {
+      "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/311_banner638677812398199251.webp?v=1744132161",
+      "altText": null,
+      "__typename": "Image"
+    },
+    "__typename": "Collection",
+    "subcollections": [
+      {
+        "id": "gid://shopify/Collection/470801121509",
+        "title": "Carregadores",
+        "handle": "carregadores",
+        "image": null,
+        "__typename": "Collection"
+      },
+      {
+        "id": "gid://shopify/Collection/470980198629",
+        "title": "Acessórios para Smartphones",
+        "handle": "acessorios-para-smartphones",
+        "image": null,
+        "__typename": "Collection"
+      }
+    ]
+  },
+  {
+    "id": "gid://shopify/Collection/462402355429",
+    "title": "Ofertas",
+    "handle": "ofertas",
+    "descriptionHtml": "",
+    "image": {
+      "src": "https://cdn.shopify.com/s/files/1/0742/3960/7013/collections/313_banner638677812925425542.webp?v=1744132548",
+      "altText": null,
+      "__typename": "Image"
+    },
+    "__typename": "Collection",
+    "subcollections": []
+  },
+  {
+    "id": "gid://shopify/Collection/470451880165",
+    "title": "Casa Inteligente",
+    "handle": "casa-inteligente",
+    "descriptionHtml": "<p>Casa inteligente</p>",
+    "image": null,
+    "__typename": "Collection",
+    "subcollections": []
+  },
+  {
+    "id": "gid://shopify/Collection/470803120357",
+    "title": "Áudio",
+    "handle": "audio",
+    "descriptionHtml": "",
+    "image": null,
+    "__typename": "Collection",
+    "subcollections": []
+  }
+]
+ GET /api/admin/collections 200 in 1068ms
+ GET /api/admin/collections 200 in 1069ms

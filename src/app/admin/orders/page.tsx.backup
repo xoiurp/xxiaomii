@@ -1,0 +1,1224 @@
+'use client';
+
+<<<<<<< HEAD
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+=======
+// Importar configuração do AG Grid primeiro
+import '@/lib/ag-grid-config';
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+>>>>>>> c1a027a (mlporivments)
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef, GridReadyEvent, CellClickedEvent, ValueFormatterParams, ICellRendererParams } from 'ag-grid-community';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-quartz.css';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  ShoppingCart,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Package,
+  Clock,
+  CheckCircle,
+  XCircle,
+  DollarSign,
+  Calendar,
+  User,
+  RefreshCw,
+  ArrowLeft,
+  Truck,
+  CreditCard,
+  AlertCircle,
+  Printer,
+  FileText,
+  Loader2
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import LabelGenerationModal from '@/components/admin/LabelGenerationModal';
+
+// AG Grid imports
+import '@/lib/ag-grid-config'; // Configuração dos módulos AG Grid
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+
+// Custom cell renderers
+import OrderStatusRenderer from '@/components/admin/grid/OrderStatusRenderer';
+import CustomerRenderer from '@/components/admin/grid/CustomerRenderer';
+import OrderProductsRenderer from '@/components/admin/grid/OrderProductsRenderer';
+import OrderActionsRenderer from '@/components/admin/grid/OrderActionsRenderer';
+import DateRenderer from '@/components/admin/grid/DateRenderer';
+import OrderPriceRenderer from '@/components/admin/grid/OrderPriceRenderer';
+
+interface Order {
+  id: string;
+  name: string;
+  createdAt: string;
+  totalPriceSet: {
+    presentmentMoney: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+  totalShippingPriceSet?: {
+    presentmentMoney: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+  displayFinancialStatus: string;
+  displayFulfillmentStatus: string;
+  customer: {
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+  } | null;
+  lineItems?: {
+    edges?: Array<{
+      node: {
+        title: string;
+        quantity: number;
+      };
+    }>;
+  };
+  shippingAddress?: {
+    firstName: string;
+    lastName: string;
+    address1: string;
+    address2?: string;
+    city: string;
+    province: string;
+    zip: string;
+    country: string;
+    phone?: string;
+  };
+}
+
+interface OrderStats {
+  totalOrders: number;
+  totalSales: number;
+  currency: string;
+  statusCount: Record<string, number>;
+}
+
+// Componente customizado para checkbox de seleção
+const SelectionRenderer = (params: ICellRendererParams) => {
+  const order = params.data as Order;
+  const { context } = params;
+  const isEligible = context.canGenerateLabel(order);
+  const isSelected = context.selectedOrders.has(order.id);
+  const hasSentLabel = context.sentLabelOrders.has(order.id);
+  
+  return (
+    <div className="flex items-center justify-center h-full">
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={() => context.toggleOrderSelection(order.id)}
+        disabled={!isEligible}
+        className="rounded border-gray-300 text-[#FF6700] focus:ring-[#FF6700] disabled:opacity-50 cursor-pointer"
+        title={!isEligible ? 'Pedido não elegível para etiqueta' : 'Selecionar pedido'}
+      />
+    </div>
+  );
+};
+
+// Componente customizado para número do pedido
+const OrderNumberRenderer = (params: ICellRendererParams) => {
+  const order = params.data as Order;
+  const { context } = params;
+  const isEligible = context.canGenerateLabel(order);
+  const hasSentLabel = context.sentLabelOrders.has(order.id);
+  const ineligibilityReason = context.getIneligibilityReason(order);
+  
+  return (
+    <div>
+      <div className="font-medium text-[#FF6700]">{order.name}</div>
+      <div className="text-sm text-gray-500">
+        ID: {order.id.split('/').pop()}
+      </div>
+      {(() => {
+        if (hasSentLabel) {
+          return (
+            <div className="text-xs text-blue-600 mt-1">
+              <CheckCircle className="h-3 w-3 inline mr-1" />
+              Etiqueta Enviada
+            </div>
+          );
+        }
+        if (isEligible) {
+          return (
+            <div className="text-xs text-green-600 mt-1">
+              <FileText className="h-3 w-3 inline mr-1" />
+              Etiqueta disponível
+            </div>
+          );
+        }
+        return (
+          <div className="text-xs text-red-600 mt-1">
+            {ineligibilityReason}
+          </div>
+        );
+      })()}
+    </div>
+  );
+};
+
+// Componente customizado para cliente
+const CustomerRenderer = (params: ICellRendererParams) => {
+  const order = params.data as Order;
+  const { context } = params;
+  const customerName = context.getCustomerName(order.customer);
+  
+  return (
+    <div className="flex items-center">
+      <div className="w-8 h-8 bg-[#FF6700] rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+        {customerName[0]}
+      </div>
+      <div>
+        <div className="font-medium">{customerName}</div>
+        <div className="text-sm text-gray-500">
+          {order.customer?.email || 'Email não disponível'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Componente customizado para produtos
+const ProductsRenderer = (params: ICellRendererParams) => {
+  const order = params.data as Order;
+  const { context } = params;
+  
+  return (
+    <div className="text-sm">
+      {context.getMainProduct(order.lineItems)}
+    </div>
+  );
+};
+
+// Componente customizado para valor
+const PriceRenderer = (params: ICellRendererParams) => {
+  const order = params.data as Order;
+  
+  return (
+    <div>
+      <div className="font-medium">
+        {order.totalPriceSet.presentmentMoney.currencyCode} {parseFloat(order.totalPriceSet.presentmentMoney.amount).toFixed(2)}
+      </div>
+      {order.totalShippingPriceSet && (
+        <div className="text-xs text-gray-500 mt-1">
+          (Frete: {parseFloat(order.totalShippingPriceSet.presentmentMoney.amount).toFixed(2)})
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Componente customizado para status financeiro
+const FinancialStatusRenderer = (params: ICellRendererParams) => {
+  const status = params.value;
+  const baseClasses = "text-xs font-medium px-2 py-1 rounded-full";
+  
+  switch (status) {
+    case 'PAID':
+      return <Badge className={`${baseClasses} bg-green-100 text-green-800`}>Pago</Badge>;
+    case 'PENDING':
+      return <Badge className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Pendente</Badge>;
+    case 'AUTHORIZED':
+      return <Badge className={`${baseClasses} bg-blue-100 text-blue-800`}>Autorizado</Badge>;
+    case 'PARTIALLY_PAID':
+      return <Badge className={`${baseClasses} bg-orange-100 text-orange-800`}>Parcialmente Pago</Badge>;
+    case 'PARTIALLY_REFUNDED':
+      return <Badge className={`${baseClasses} bg-orange-100 text-orange-800`}>Parcialmente Reembolsado</Badge>;
+    case 'REFUNDED':
+      return <Badge className={`${baseClasses} bg-red-100 text-red-800`}>Reembolsado</Badge>;
+    case 'VOIDED':
+      return <Badge className={`${baseClasses} bg-red-100 text-red-800`}>Cancelado</Badge>;
+    case 'EXPIRED':
+      return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>Expirado</Badge>;
+    default:
+      return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</Badge>;
+  }
+};
+
+// Componente customizado para status de entrega
+const FulfillmentStatusRenderer = (params: ICellRendererParams) => {
+  const status = params.value;
+  const baseClasses = "text-xs font-medium px-2 py-1 rounded-full";
+  
+  switch (status) {
+    case 'FULFILLED':
+      return <Badge className={`${baseClasses} bg-green-100 text-green-800`}>Entregue</Badge>;
+    case 'PARTIAL':
+      return <Badge className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Parcial</Badge>;
+    case 'UNFULFILLED':
+      return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>Não Atendido</Badge>;
+    case 'SHIPPED':
+      return <Badge className={`${baseClasses} bg-blue-100 text-blue-800`}>Enviado</Badge>;
+    case 'UNSHIPPED':
+      return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>Não Enviado</Badge>;
+    case 'SCHEDULED':
+      return <Badge className={`${baseClasses} bg-purple-100 text-purple-800`}>Agendado</Badge>;
+    case 'ON_HOLD':
+      return <Badge className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Em Espera</Badge>;
+    case 'REQUEST_DECLINED':
+      return <Badge className={`${baseClasses} bg-red-100 text-red-800`}>Recusado</Badge>;
+    default:
+      return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</Badge>;
+  }
+};
+
+// Componente customizado para data
+const DateRenderer = (params: ICellRendererParams) => {
+  const date = new Date(params.value);
+  
+  return (
+    <div>
+      <div className="flex items-center text-sm text-gray-500">
+        <Calendar className="h-3 w-3 mr-1" />
+        {format(date, 'dd/MM/yyyy', { locale: ptBR })}
+      </div>
+      <div className="text-xs text-gray-400">
+        {format(date, 'HH:mm', { locale: ptBR })}
+      </div>
+    </div>
+  );
+};
+
+// Componente customizado para ações
+const ActionsRenderer = (params: ICellRendererParams) => {
+  const order = params.data as Order;
+  
+  return (
+    <div className="flex items-center justify-center h-full">
+      <Link href={`/admin/orders/${order.id.split('/').pop()}`}>
+        <Button variant="ghost" size="sm">
+          <Eye className="h-4 w-4" />
+        </Button>
+      </Link>
+    </div>
+  );
+};
+
+export default function OrdersPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [stats, setStats] = useState<OrderStats | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [gridApi, setGridApi] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterFinancial, setFilterFinancial] = useState('all');
+
+  // Estados para seleção de pedidos e geração de etiquetas
+  const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
+  const [isLabelModalOpen, setIsLabelModalOpen] = useState(false);
+  const [sentLabelOrders, setSentLabelOrders] = useState<Set<string>>(new Set());
+
+  // Funções definidas antes dos useMemo/useCallback para manter ordem dos hooks
+  const canGenerateLabel = useCallback((order: Order) => {
+    const hasShippingAddress = !!order.shippingAddress;
+    const isPaid = order.displayFinancialStatus === 'PAID';
+    const isNotFulfilled = order.displayFulfillmentStatus !== 'FULFILLED';
+    
+    return hasShippingAddress && isPaid && isNotFulfilled;
+  }, []);
+
+  const toggleOrderSelection = useCallback((orderId: string) => {
+    setSelectedOrders(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(orderId)) {
+        newSelected.delete(orderId);
+      } else {
+        newSelected.add(orderId);
+      }
+      return newSelected;
+    });
+  }, []);
+
+  // AG Grid column definitions
+  const columnDefs: ColDef[] = useMemo(() => [
+    {
+      headerName: 'Pedido',
+      field: 'name',
+      width: 150,
+      cellRenderer: (params: any) => (
+        <div className="flex flex-col justify-center h-full">
+          <div className="font-medium text-[#FF6700]">{params.data.name}</div>
+          <div className="text-xs text-gray-500">
+            ID: {params.data.id.split('/').pop()}
+          </div>
+        </div>
+      ),
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: 'Cliente',
+      field: 'customer',
+      width: 200,
+      cellRenderer: CustomerRenderer,
+      sortable: false,
+      filter: false
+    },
+    {
+      headerName: 'Produtos',
+      field: 'lineItems',
+      width: 250,
+      cellRenderer: OrderProductsRenderer,
+      sortable: false,
+      filter: false
+    },
+    {
+      headerName: 'Valor',
+      field: 'totalPriceSet',
+      width: 120,
+      cellRenderer: OrderPriceRenderer,
+      sortable: true,
+      filter: false
+    },
+    {
+      headerName: 'Pagamento',
+      field: 'displayFinancialStatus',
+      width: 140,
+      cellRenderer: OrderStatusRenderer,
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: 'Entrega',
+      field: 'displayFulfillmentStatus',
+      width: 140,
+      cellRenderer: OrderStatusRenderer,
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: 'Data',
+      field: 'createdAt',
+      width: 120,
+      cellRenderer: DateRenderer,
+      sortable: true,
+      filter: false
+    },
+    {
+      headerName: 'Ações',
+      field: 'actions',
+      width: 120,
+      cellRenderer: OrderActionsRenderer,
+      sortable: false,
+      filter: false,
+      pinned: 'right'
+    }
+  ], []);
+
+  // Grid context for passing functions to cell renderers
+  const gridContext = useMemo(() => ({
+    selectedOrders,
+    sentLabelOrders,
+    toggleOrderSelection,
+    canGenerateLabel
+  }), [selectedOrders, sentLabelOrders, toggleOrderSelection, canGenerateLabel]);
+
+  // AG Grid default column definition
+  const defaultColDef = useMemo(() => ({
+    flex: 1,
+    minWidth: 100,
+    resizable: true,
+    sortable: true,
+    filter: true
+  }), []);
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/admin/orders');
+      const data = await response.json();
+
+      if (data.success) {
+        setOrders(data.orders || []);
+        setStats({
+          totalOrders: data.summary.totalOrders,
+          totalSales: data.summary.totalSales,
+          currency: data.summary.currency,
+          statusCount: data.statusCount || {}
+        });
+      } else {
+        throw new Error(data.details || 'Erro ao buscar pedidos');
+      }
+    } catch (err) {
+      console.error('Erro ao buscar pedidos:', err);
+      setError('Erro ao carregar dados dos pedidos');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Funções auxiliares
+  const getCustomerName = useCallback((customer: Order['customer']) => {
+    if (!customer) return 'Cliente não identificado';
+    if (customer.firstName && customer.lastName) {
+      return `${customer.firstName} ${customer.lastName}`;
+    }
+    return customer.firstName || customer.lastName || customer.email || 'Cliente';
+  }, []);
+
+  const getMainProduct = useCallback((lineItems: Order['lineItems']) => {
+    if (!lineItems || !lineItems.edges || lineItems.edges.length === 0) return 'Nenhum produto';
+    const firstItem = lineItems.edges[0].node;
+    const totalItems = lineItems.edges.reduce((sum, item) => sum + item.node.quantity, 0);
+    
+    if (lineItems.edges.length === 1) {
+      return `${firstItem.title} (${firstItem.quantity}x)`;
+    } else {
+      return `${firstItem.title} +${lineItems.edges.length - 1} item${lineItems.edges.length > 2 ? 's' : ''} (${totalItems} total)`;
+    }
+  }, []);
+
+  // Função para verificar se um pedido pode ter etiqueta gerada
+  const canGenerateLabel = useCallback((order: Order) => {
+    const hasShippingAddress = !!order.shippingAddress;
+    const isPaid = order.displayFinancialStatus === 'PAID';
+    const isNotFulfilled = order.displayFulfillmentStatus !== 'FULFILLED';
+    
+    return hasShippingAddress && isPaid && isNotFulfilled;
+  }, []);
+
+  // Função para obter motivo da não elegibilidade
+  const getIneligibilityReason = useCallback((order: Order) => {
+    if (!order.shippingAddress) return 'Sem endereço de envio';
+    if (order.displayFinancialStatus !== 'PAID') return `Pagamento: ${order.displayFinancialStatus}`;
+    if (order.displayFulfillmentStatus === 'FULFILLED') return 'Pedido já entregue';
+    return 'Elegível';
+  }, []);
+
+  // Função para selecionar/deselecionar pedido
+  const toggleOrderSelection = useCallback((orderId: string) => {
+    const newSelected = new Set(selectedOrders);
+    if (newSelected.has(orderId)) {
+      newSelected.delete(orderId);
+    } else {
+      newSelected.add(orderId);
+    }
+    setSelectedOrders(newSelected);
+  }, [selectedOrders]);
+
+  // Definição das colunas do AG Grid
+  const columnDefs: ColDef[] = useMemo(() => [
+    {
+      headerName: '',
+      field: 'selection',
+      width: 50,
+      headerCheckboxSelection: true,
+      checkboxSelection: true,
+      headerCheckboxSelectionFilteredOnly: true,
+      cellRenderer: SelectionRenderer,
+      sortable: false,
+      filter: false,
+      resizable: false,
+      pinned: 'left',
+    },
+    {
+      headerName: 'Pedido',
+      field: 'name',
+      width: 150,
+      cellRenderer: OrderNumberRenderer,
+      filter: 'agTextColumnFilter',
+      pinned: 'left',
+    },
+    {
+      headerName: 'Cliente',
+      field: 'customer',
+      width: 250,
+      cellRenderer: CustomerRenderer,
+      filter: 'agTextColumnFilter',
+      filterParams: {
+        textFormatter: (value: any) => {
+          if (!value || !value.customer) return '';
+          return value.customer.email || '';
+        }
+      }
+    },
+    {
+      headerName: 'Produtos',
+      field: 'lineItems',
+      flex: 1,
+      minWidth: 200,
+      cellRenderer: ProductsRenderer,
+      filter: false,
+    },
+    {
+      headerName: 'Valor',
+      field: 'totalPriceSet',
+      width: 120,
+      cellRenderer: PriceRenderer,
+      filter: 'agNumberColumnFilter',
+      comparator: (valueA: any, valueB: any, nodeA: any, nodeB: any) => {
+        const priceA = parseFloat(nodeA.data.totalPriceSet?.presentmentMoney?.amount || '0');
+        const priceB = parseFloat(nodeB.data.totalPriceSet?.presentmentMoney?.amount || '0');
+        return priceA - priceB;
+      },
+    },
+    {
+      headerName: 'Pagamento',
+      field: 'displayFinancialStatus',
+      width: 150,
+      cellRenderer: FinancialStatusRenderer,
+      filter: 'agTextColumnFilter',
+    },
+    {
+      headerName: 'Entrega',
+      field: 'displayFulfillmentStatus',
+      width: 130,
+      cellRenderer: FulfillmentStatusRenderer,
+      filter: 'agTextColumnFilter',
+    },
+    {
+      headerName: 'Data',
+      field: 'createdAt',
+      width: 140,
+      cellRenderer: DateRenderer,
+      filter: 'agDateColumnFilter',
+      comparator: (dateA: string, dateB: string) => {
+        const a = new Date(dateA).getTime();
+        const b = new Date(dateB).getTime();
+        return a - b;
+      },
+    },
+    {
+      headerName: 'Ações',
+      field: 'actions',
+      width: 80,
+      cellRenderer: ActionsRenderer,
+      sortable: false,
+      filter: false,
+      resizable: false,
+      pinned: 'right',
+    },
+  ], []);
+
+  // Configurações padrão do AG Grid
+  const defaultColDef = useMemo(() => ({
+    sortable: true,
+    filter: true,
+    resizable: true,
+    floatingFilter: true,
+  }), []);
+
+  // Callback quando o grid está pronto
+  const onGridReady = useCallback((params: GridReadyEvent) => {
+    setGridApi(params.api);
+  }, []);
+
+  // Aplicar filtros externos ao AG Grid
+  useEffect(() => {
+    if (!gridApi) return;
+
+    // Aplicar filtro de busca global
+    gridApi.setGridOption('quickFilterText', searchTerm);
+
+    // Aplicar filtros customizados
+    gridApi.onFilterChanged();
+  }, [searchTerm, gridApi]);
+
+  // Filtrar dados baseado nos selects de status
+  const filteredData = useMemo(() => {
+    let filtered = orders;
+
+    // Filtro por status de fulfillment
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(order => {
+        switch (filterStatus) {
+          case 'fulfilled': return order.displayFulfillmentStatus === 'FULFILLED';
+          case 'partial': return order.displayFulfillmentStatus === 'PARTIAL';
+          case 'unfulfilled': return order.displayFulfillmentStatus === 'UNFULFILLED';
+          case 'shipped': return order.displayFulfillmentStatus === 'SHIPPED';
+          case 'unshipped': return order.displayFulfillmentStatus === 'UNSHIPPED';
+          case 'scheduled': return order.displayFulfillmentStatus === 'SCHEDULED';
+          case 'on_hold': return order.displayFulfillmentStatus === 'ON_HOLD';
+          case 'request_declined': return order.displayFulfillmentStatus === 'REQUEST_DECLINED';
+          default: return true;
+        }
+      });
+    }
+
+    // Filtro por status financeiro
+    if (filterFinancial !== 'all') {
+      filtered = filtered.filter(order => {
+        switch (filterFinancial) {
+          case 'paid': return order.displayFinancialStatus === 'PAID';
+          case 'pending': return order.displayFinancialStatus === 'PENDING';
+          case 'authorized': return order.displayFinancialStatus === 'AUTHORIZED';
+          case 'partially_paid': return order.displayFinancialStatus === 'PARTIALLY_PAID';
+          case 'partially_refunded': return order.displayFinancialStatus === 'PARTIALLY_REFUNDED';
+          case 'refunded': return order.displayFinancialStatus === 'REFUNDED';
+          case 'voided': return order.displayFinancialStatus === 'VOIDED';
+          case 'expired': return order.displayFinancialStatus === 'EXPIRED';
+          default: return true;
+        }
+      });
+    }
+
+    return filtered;
+  }, [orders, filterStatus, filterFinancial]);
+
+  // Função para abrir modal de geração de etiquetas
+  const openLabelModal = useCallback(() => {
+    const selectedOrdersData = orders.filter(order => selectedOrders.has(order.id));
+    
+    if (selectedOrdersData.length === 0) {
+      alert('Por favor, selecione pelo menos um pedido elegível para gerar etiquetas.');
+      return;
+    }
+    
+    setIsLabelModalOpen(true);
+  }, [orders, selectedOrders]);
+
+  // Função para fechar modal de geração de etiquetas
+  const closeLabelModal = useCallback(() => {
+    setIsLabelModalOpen(false);
+  }, []);
+
+  // Função chamada quando etiquetas são geradas com sucesso
+  const handleLabelSuccess = useCallback(() => {
+    // Adicionar os pedidos que acabaram de ser processados ao estado 'sent'
+    setSentLabelOrders(prevSent => new Set([...prevSent, ...selectedOrders]));
+    // Limpar seleção após sucesso
+    setSelectedOrders(new Set());
+    // Não vamos mais recarregar tudo, apenas fechar o modal
+    closeLabelModal();
+  }, [selectedOrders, closeLabelModal]);
+
+  // Callback para seleção de linhas no AG Grid
+  const onSelectionChanged = useCallback(() => {
+    if (!gridApi) return;
+    
+    const selectedNodes = gridApi.getSelectedNodes();
+    const selectedIds = selectedNodes
+      .filter((node: any) => canGenerateLabel(node.data))
+      .map((node: any) => node.data.id);
+    
+    setSelectedOrders(new Set(selectedIds));
+  }, [gridApi, canGenerateLabel]);
+
+  // Filtrar apenas pedidos elegíveis para etiquetas
+  const eligibleOrders = useMemo(() => 
+    filteredData.filter(canGenerateLabel),
+    [filteredData, canGenerateLabel]
+  );
+
+  const selectedEligibleCount = useMemo(() => 
+    Array.from(selectedOrders).filter(id => 
+      eligibleOrders.some(order => order.id === id)
+    ).length,
+    [selectedOrders, eligibleOrders]
+  );
+
+  // Contexto para os cell renderers
+  const gridContext = useMemo(() => ({
+    selectedOrders,
+    sentLabelOrders,
+    toggleOrderSelection,
+    canGenerateLabel,
+    getIneligibilityReason,
+    getCustomerName,
+    getMainProduct,
+  }), [selectedOrders, sentLabelOrders, toggleOrderSelection, canGenerateLabel, getIneligibilityReason, getCustomerName, getMainProduct]);
+
+  // Early returns APÓS todos os hooks
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6700] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando pedidos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session || session.user.role !== 'ADMIN') {
+    router.push('/admin/signin');
+    return null;
+  }
+
+<<<<<<< HEAD
+  const getCustomerName = (customer: Order['customer']) => {
+    if (!customer) return 'Cliente não identificado';
+    if (customer.firstName && customer.lastName) {
+      return `${customer.firstName} ${customer.lastName}`;
+    }
+    return customer.firstName || customer.lastName || customer.email || 'Cliente';
+  };
+
+  const getStatusBadge = (status: string, type: 'financial' | 'fulfillment') => {
+    const baseClasses = "text-xs font-medium px-2 py-1 rounded-full";
+    
+    if (type === 'financial') {
+      switch (status) {
+        case 'PAID':
+          return <Badge className={`${baseClasses} bg-green-100 text-green-800`}>Pago</Badge>;
+        case 'PENDING':
+          return <Badge className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Pendente</Badge>;
+        case 'AUTHORIZED':
+          return <Badge className={`${baseClasses} bg-blue-100 text-blue-800`}>Autorizado</Badge>;
+        case 'PARTIALLY_PAID':
+          return <Badge className={`${baseClasses} bg-orange-100 text-orange-800`}>Parcialmente Pago</Badge>;
+        case 'PARTIALLY_REFUNDED':
+          return <Badge className={`${baseClasses} bg-orange-100 text-orange-800`}>Parcialmente Reembolsado</Badge>;
+        case 'REFUNDED':
+          return <Badge className={`${baseClasses} bg-red-100 text-red-800`}>Reembolsado</Badge>;
+        case 'VOIDED':
+          return <Badge className={`${baseClasses} bg-red-100 text-red-800`}>Cancelado</Badge>;
+        case 'EXPIRED':
+          return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>Expirado</Badge>;
+        default:
+          return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</Badge>;
+      }
+    } else {
+      switch (status) {
+        case 'FULFILLED':
+          return <Badge className={`${baseClasses} bg-green-100 text-green-800`}>Entregue</Badge>;
+        case 'PARTIAL':
+          return <Badge className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Parcial</Badge>;
+        case 'UNFULFILLED':
+          return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>Não Atendido</Badge>;
+        case 'SHIPPED':
+          return <Badge className={`${baseClasses} bg-blue-100 text-blue-800`}>Enviado</Badge>;
+        case 'UNSHIPPED':
+          return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>Não Enviado</Badge>;
+        case 'SCHEDULED':
+          return <Badge className={`${baseClasses} bg-purple-100 text-purple-800`}>Agendado</Badge>;
+        case 'ON_HOLD':
+          return <Badge className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Em Espera</Badge>;
+        case 'REQUEST_DECLINED':
+          return <Badge className={`${baseClasses} bg-red-100 text-red-800`}>Recusado</Badge>;
+        default:
+          return <Badge className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</Badge>;
+      }
+    }
+  };
+
+  const getMainProduct = (lineItems: Order['lineItems']) => {
+    if (!lineItems || !lineItems.edges || lineItems.edges.length === 0) return 'Nenhum produto';
+    const firstItem = lineItems.edges[0].node;
+    const totalItems = lineItems.edges.reduce((sum, item) => sum + item.node.quantity, 0);
+    
+    if (lineItems.edges.length === 1) {
+      return `${firstItem.title} (${firstItem.quantity}x)`;
+    } else {
+      return `${firstItem.title} +${lineItems.edges.length - 1} item${lineItems.edges.length > 2 ? 's' : ''} (${totalItems} total)`;
+    }
+  };
+
+  // Paginação
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
+  // Função para selecionar/deselecionar todos os pedidos visíveis
+  const toggleAllOrdersSelection = () => {
+    // Considerar apenas pedidos elegíveis para seleção
+    const eligibleOrderIds = currentOrders.filter(canGenerateLabel).map(order => order.id);
+    const allEligibleSelected = eligibleOrderIds.every(id => selectedOrders.has(id));
+    
+    const newSelected = new Set(selectedOrders);
+    if (allEligibleSelected) {
+      // Desmarcar todos os pedidos elegíveis
+      eligibleOrderIds.forEach(id => newSelected.delete(id));
+    } else {
+      // Marcar todos os pedidos elegíveis
+      eligibleOrderIds.forEach(id => newSelected.add(id));
+    }
+    setSelectedOrders(newSelected);
+  };
+
+  // Função para abrir modal de geração de etiquetas
+  const openLabelModal = () => {
+    const selectedOrdersData = orders.filter(order => selectedOrders.has(order.id));
+    
+    if (selectedOrdersData.length === 0) {
+      alert('Por favor, selecione pelo menos um pedido elegível para gerar etiquetas.');
+      return;
+    }
+    
+    setIsLabelModalOpen(true);
+  };
+
+  // Função para fechar modal de geração de etiquetas
+  const closeLabelModal = () => {
+    setIsLabelModalOpen(false);
+  };
+
+  // Função chamada quando etiquetas são geradas com sucesso
+  const handleLabelSuccess = () => {
+    // Adicionar os pedidos que acabaram de ser processados ao estado 'sent'
+    setSentLabelOrders(prevSent => new Set([...prevSent, ...selectedOrders]));
+    // Limpar seleção após sucesso
+    setSelectedOrders(new Set());
+    // Não vamos mais recarregar tudo, apenas fechar o modal
+    closeLabelModal();
+  };
+
+  // Função para obter motivo da não elegibilidade
+  const getIneligibilityReason = (order: Order) => {
+    if (!order.shippingAddress) return 'Sem endereço de envio';
+    if (order.displayFinancialStatus !== 'PAID') return `Pagamento: ${order.displayFinancialStatus}`;
+    if (order.displayFulfillmentStatus === 'FULFILLED') return 'Pedido já entregue';
+    return 'Elegível';
+  };
+
+  // Filtrar apenas pedidos elegíveis para etiquetas
+  const eligibleOrders = currentOrders.filter(canGenerateLabel);
+  const selectedEligibleCount = Array.from(selectedOrders).filter(id => 
+    eligibleOrders.some(order => order.id === id)
+  ).length;
+
+  // Verificar se todos os pedidos elegíveis estão selecionados
+  const allEligibleSelected = eligibleOrders.length > 0 && eligibleOrders.every(order => selectedOrders.has(order.id));
+
+=======
+>>>>>>> c1a027a (mlporivments)
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              onClick={() => router.push('/admin')}
+              className="mr-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Pedidos</h1>
+              <p className="text-gray-600">Gerencie pedidos e gere etiquetas de envio</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm" 
+              onClick={fetchOrders}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+            {/* Mostrar botão sempre que há pedidos elegíveis, mesmo sem seleção */}
+            {eligibleOrders.length > 0 && (
+              <Button
+                onClick={openLabelModal}
+                disabled={selectedEligibleCount === 0}
+                className="bg-[#FF6700] hover:bg-[#E55A00] text-white disabled:opacity-50"
+              >
+                <Printer className="h-4 w-4 mr-2" />
+                {selectedEligibleCount > 0 
+                  ? `Gerar Etiquetas (${selectedEligibleCount})`
+                  : `Gerar Etiquetas (0/${eligibleOrders.length})`
+                }
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6">
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <div className="flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2" />
+              {error}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={fetchOrders}
+              className="mt-2"
+            >
+              Tentar Novamente
+            </Button>
+          </div>
+        )}
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total de Pedidos</CardTitle>
+              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.totalOrders || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                Pedidos processados
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats?.currency} {stats?.totalSales?.toLocaleString() || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Valor total dos pedidos
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Ticket Médio</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats?.currency} {stats?.totalOrders && stats?.totalSales 
+                  ? (stats.totalSales / stats.totalOrders).toFixed(2)
+                  : '0.00'
+                }
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Valor médio por pedido
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Status Principal</CardTitle>
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stats?.statusCount && Object.keys(stats.statusCount).length > 0
+                  ? Object.entries(stats.statusCount).reduce((a, b) => 
+                      stats.statusCount[a[0]] > stats.statusCount[b[0]] ? a : b
+                    )[0]
+                  : 'N/A'
+                }
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Status mais comum
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+
+        {/* Search and Filters */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Filtros</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar por número do pedido, cliente ou produto..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6700] focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6700] focus:border-transparent"
+                >
+                  <option value="all">Todos os Status</option>
+                  <option value="fulfilled">Entregue</option>
+                  <option value="shipped">Enviado</option>
+                  <option value="unshipped">Não Enviado</option>
+                  <option value="unfulfilled">Não Atendido</option>
+                  <option value="partial">Parcial</option>
+                  <option value="scheduled">Agendado</option>
+                  <option value="on_hold">Em Espera</option>
+                  <option value="request_declined">Recusado</option>
+                </select>
+
+                <select
+                  value={filterFinancial}
+                  onChange={(e) => setFilterFinancial(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6700] focus:border-transparent"
+                >
+                  <option value="all">Todos Pagamentos</option>
+                  <option value="paid">Pago</option>
+                  <option value="pending">Pendente</option>
+                  <option value="authorized">Autorizado</option>
+                  <option value="partially_paid">Parcialmente Pago</option>
+                  <option value="partially_refunded">Parcialmente Reembolsado</option>
+                  <option value="refunded">Reembolsado</option>
+                  <option value="voided">Cancelado</option>
+                  <option value="expired">Expirado</option>
+                </select>
+                
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Orders Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Lista de Pedidos ({filteredData.length})
+              {selectedOrders.size > 0 && (
+                <span className="ml-2 text-sm font-normal text-[#FF6700]">
+                  • {selectedOrders.size} selecionado{selectedOrders.size !== 1 ? 's' : ''}
+                </span>
+              )}
+              {eligibleOrders.length > 0 && (
+                <span className="ml-2 text-sm font-normal text-green-600">
+                  • {eligibleOrders.length} elegível{eligibleOrders.length !== 1 ? 'is' : ''} para etiqueta
+                </span>
+              )}
+            </CardTitle>
+            <CardDescription>
+              Dados em tempo real do Shopify • Selecione pedidos para gerar etiquetas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF6700]"></div>
+                <span className="ml-2">Carregando pedidos...</span>
+              </div>
+            ) : filteredData.length === 0 ? (
+              <div className="text-center py-8">
+                <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">
+                  {orders.length === 0 
+                    ? 'Nenhum pedido encontrado na loja.'
+                    : 'Nenhum pedido encontrado com os filtros aplicados.'
+                  }
+                </p>
+              </div>
+            ) : (
+              <>
+<<<<<<< HEAD
+                {/* AG Grid */}
+                <div 
+                  className="ag-theme-alpine" 
+                  style={{ 
+                    height: '600px', 
+                    width: '100%',
+                    '--ag-header-background-color': '#f9fafb',
+                    '--ag-border-color': '#e5e7eb',
+                    '--ag-row-hover-color': '#f3f4f6',
+                    '--ag-selected-row-background-color': '#fef3e8'
+                  } as React.CSSProperties}
+                >
+                  <AgGridReact
+                    rowData={filteredOrders}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    context={gridContext}
+=======
+                {/* Debug Info - Remover em produção */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="mb-4 p-3 bg-gray-100 rounded-lg text-xs">
+                    <strong>Debug Info:</strong> Total de pedidos: {filteredData.length} | 
+                    Elegíveis: {eligibleOrders.length} | 
+                    Selecionados: {selectedOrders.size}
+                    {filteredData.length > 0 && (
+                      <div className="mt-2">
+                        <strong>Primeiro pedido:</strong> {filteredData[0].name} - 
+                        Endereço: {filteredData[0].shippingAddress ? '✓' : '✗'} | 
+                        Pago: {filteredData[0].displayFinancialStatus} | 
+                        Entrega: {filteredData[0].displayFulfillmentStatus}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* AG Grid */}
+                <div className="ag-theme-quartz" style={{ height: 600, width: '100%' }}>
+                  <AgGridReact
+                    rowData={filteredData}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
+                    onSelectionChanged={onSelectionChanged}
+                    context={gridContext}
+                    rowSelection="multiple"
+                    suppressRowClickSelection={true}
+>>>>>>> c1a027a (mlporivments)
+                    pagination={true}
+                    paginationPageSize={25}
+                    paginationPageSizeSelector={[10, 25, 50, 100]}
+                    animateRows={true}
+<<<<<<< HEAD
+                    enableCellTextSelection={true}
+                    suppressMenuHide={true}
+                    suppressRowClickSelection={true}
+                    rowHeight={60}
+                    headerHeight={50}
+                    getRowStyle={(params) => {
+                      if (selectedOrders.has(params.data.id)) {
+                        return { backgroundColor: '#fef3e8' };
+                      }
+                      return undefined;
+                    }}
+=======
+                    domLayout="normal"
+                    enableCellTextSelection={true}
+                    ensureDomOrder={true}
+                    rowHeight={80}
+                    headerHeight={50}
+                    suppressMenuHide={true}
+                    tooltipShowDelay={0}
+                    getRowId={(params) => params.data.id}
+                    isRowSelectable={(params) => canGenerateLabel(params.data)}
+>>>>>>> c1a027a (mlporivments)
+                  />
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Substituir o modal inline pelo componente */}
+        <LabelGenerationModal
+          isOpen={isLabelModalOpen}
+          selectedOrders={orders.filter(order => selectedOrders.has(order.id))}
+          onClose={closeLabelModal}
+          onSuccess={handleLabelSuccess}
+        />
+      </div>
+    </div>
+  );
+}
