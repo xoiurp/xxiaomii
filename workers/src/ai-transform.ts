@@ -539,7 +539,8 @@ function generalizeBrandText(title: string, description?: string): string {
     'Mi',
     'Poco',
     'Black Shark',
-    // Adicione outras marcas que quiser remover
+    'Amazfit',
+    'Huami',
   ];
 
   // Categorias de produtos para substituição
@@ -556,7 +557,8 @@ function generalizeBrandText(title: string, description?: string): string {
     ],
     'Smartwatch': [
       /\b(smartwatchs?|watchs?|relógios?)\b/i,
-      /\b(mi\s*band|smart\s*band|fit)\b/i, // "mi band" como unidade, não só "band"
+      /\b(mi\s*band|smart\s*band|fit)\b/i,
+      /\b(amazfit|bip|gtr|gts|t-rex|trex|pace|stratos|verge)\b/i, // Amazfit = smartwatch
     ],
     'Tablet': [
       /\b(tablets?|pads?)\b/i,
