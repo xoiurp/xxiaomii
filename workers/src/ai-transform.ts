@@ -64,10 +64,13 @@ export async function enhanceSEOContent(
       hasDescription: !!pageData.description
     });
 
-    // Gerar melhorias com AI
+    // Gerar melhorias - diferencia homepage de páginas de produto
     console.log('🤖 Gerando enhancements...');
-    const enhancements = await generateEnhancements(pageData, bot, env);
-    console.log('✅ Enhancements gerados:', Object.keys(enhancements));
+    const isHome = isHomePage(url);
+    const enhancements = isHome
+      ? generateHomeEnhancements(html, bot, url)
+      : await generateEnhancements(pageData, bot, env);
+    console.log('✅ Enhancements gerados:', Object.keys(enhancements), isHome ? '(homepage)' : '(produto)');
 
     // Injetar melhorias no HTML
     console.log('💉 Injetando enhancements no HTML...');
@@ -289,13 +292,21 @@ function injectEnhancements(html: string, enhancements: SEOEnhancements): string
     enhanced = injectMetaTag(enhanced, 'description', enhancements.metaDescription);
   }
 
-  // 2. Injetar Schema.org JSON-LD
+  // 2. Injetar Schema.org JSON-LD (single)
   if (enhancements.schema) {
     const schemaScript = `
 <script type="application/ld+json">
 ${JSON.stringify(enhancements.schema, null, 0)}
 </script>`;
     enhanced = injectBeforeClosingHead(enhanced, schemaScript);
+  }
+
+  // 2b. Injetar múltiplos Schema.org JSON-LD (homepage)
+  if (enhancements.schemas) {
+    const schemaScripts = enhancements.schemas.map(s =>
+      `<script type="application/ld+json">\n${JSON.stringify(s, null, 0)}\n</script>`
+    ).join('\n');
+    enhanced = injectBeforeClosingHead(enhanced, schemaScripts);
   }
 
   // 3. Injetar Open Graph tags
@@ -688,6 +699,99 @@ function extractKeywords(text: string): string[] {
 }
 
 // ============================================
+// Homepage Enhancements
+// ============================================
+
+function generateHomeEnhancements(html: string, bot: BotInfo, url: URL): SEOEnhancements {
+  const enhancements: SEOEnhancements = {};
+
+  // 1. Schema.org WebSite + Organization
+  enhancements.schemas = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Xiaomi do Brasil',
+      alternateName: 'MiBrasil',
+      url: `${url.protocol}//${url.host}`,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${url.protocol}//${url.host}/search?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Xiaomi do Brasil',
+      url: `${url.protocol}//${url.host}`,
+      logo: `${url.protocol}//${url.host}/assets/images/novo-logo.svg`,
+      sameAs: [],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer service',
+        availableLanguage: 'Portuguese',
+      },
+    },
+  ];
+
+  // 2. Open Graph para homepage
+  enhancements.openGraph = {
+    title: 'Xiaomi do Brasil - Loja Oficial',
+    description: 'Smartphones, smartwatches, fones de ouvido e acessórios. Produtos originais com garantia.',
+    image: `${url.protocol}//${url.host}/assets/images/novo-logo.svg`,
+    url: `${url.protocol}//${url.host}`,
+    type: 'website',
+    siteName: 'Xiaomi do Brasil',
+  };
+
+  // 3. Keywords
+  enhancements.keywords = [
+    'smartphone', 'smartwatch', 'fone de ouvido', 'carregador',
+    'acessórios', 'eletrônicos', 'loja oficial', 'garantia', 'brasil',
+  ];
+
+  // 4. Alt text generalizado para TODAS as imagens do HTML
+  enhancements.imageAlt = generateHomeImageAltTexts(html, bot);
+
+  return enhancements;
+}
+
+/**
+ * Gera alt texts generalizados para todas as imagens da homepage.
+ * Extrai o alt original de cada <img> e generaliza removendo marcas.
+ */
+function generateHomeImageAltTexts(html: string, bot: BotInfo): Record<string, string> {
+  const altTexts: Record<string, string> = {};
+
+  // Capturar todas as <img> com src e alt
+  const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*?)["'][^>]*>|<img[^>]*alt=["']([^"']*?)["'][^>]*src=["']([^"']+)["'][^>]*>/gi;
+  let match;
+
+  while ((match = imgRegex.exec(html)) !== null) {
+    const src = match[1] || match[4];
+    const alt = match[2] || match[3];
+
+    if (!src || !alt || alt.length < 2) continue;
+
+    // Pular logos e ícones
+    if (src.includes('logo') || src.includes('icon') || src.includes('favicon')) continue;
+    if (alt.toLowerCase().includes('logo')) continue;
+
+    // Só generalizar se o alt contém alguma marca conhecida
+    const brandsPattern = /\b(xiaomi|redmi|mi|poco|black\s*shark|amazfit|huami)\b/i;
+    if (brandsPattern.test(alt)) {
+      altTexts[src] = generalizeBrandText(alt);
+    }
+  }
+
+  console.log('🏠 Homepage: generalizados', Object.keys(altTexts).length, 'alt texts');
+  return altTexts;
+}
+
+// ============================================
 // Utilities
 // ============================================
 
@@ -740,6 +844,18 @@ async function logTransformation(db: D1Database, data: any): Promise<void> {
 export function isProductPage(url: URL): boolean {
   return url.pathname.startsWith('/products/') ||
          url.pathname.includes('/product/');
+}
+
+export function isHomePage(url: URL): boolean {
+  return url.pathname === '/' || url.pathname === '';
+}
+
+export function isShopPage(url: URL): boolean {
+  return url.pathname.startsWith('/shop');
+}
+
+export function shouldTransformPage(url: URL): boolean {
+  return isProductPage(url) || isHomePage(url) || isShopPage(url);
 }
 
 export function shouldUseAI(env: Env): boolean {

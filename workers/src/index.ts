@@ -6,7 +6,7 @@
 import { Env, RequestContext, DEFAULT_WORKER_CONFIG } from './types';
 import { detectBot, shouldOptimizeForBot } from './bot-detection';
 import { transformImage, isImageRequest } from './image-transform';
-import { enhanceSEOContent, isProductPage } from './ai-transform';
+import { enhanceSEOContent, shouldTransformPage } from './ai-transform';
 import { handleExtractProduct } from './extract-product';
 
 // ============================================
@@ -69,10 +69,9 @@ export default {
       }
 
       // ============================================
-      // ROUTE 5: AI Enhancement para Bots em Páginas de Produto
+      // ROUTE 5: AI Enhancement para Bots (Produtos, Homepage, Shop)
       // ============================================
 
-      // Debug logging para diagnosticar por que AI transform não está executando
       console.log('🔍 Debug AI Transform:', {
         url: url.pathname,
         botInfo: {
@@ -84,7 +83,7 @@ export default {
         conditions: {
           enableAITransform: DEFAULT_WORKER_CONFIG.enableAITransform,
           shouldOptimizeForBot: shouldOptimizeForBot(bot, env.ENVIRONMENT),
-          isProductPage: isProductPage(url),
+          shouldTransformPage: shouldTransformPage(url),
         },
         environment: env.ENVIRONMENT,
         userAgent: request.headers.get('User-Agent'),
@@ -92,7 +91,7 @@ export default {
 
       if (DEFAULT_WORKER_CONFIG.enableAITransform &&
           shouldOptimizeForBot(bot, env.ENVIRONMENT) &&
-          isProductPage(url)) {
+          shouldTransformPage(url)) {
 
         console.log('✅ AI Transform ATIVADO para:', url.pathname);
 

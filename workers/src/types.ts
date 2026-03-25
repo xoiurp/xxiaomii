@@ -117,6 +117,7 @@ export interface SEOEnhancements {
   keywords?: string[];
   imageAlt?: Record<string, string>;
   schema?: SchemaOrgProduct;
+  schemas?: Record<string, any>[]; // Multiple schema blocks (WebSite, Organization, etc.)
   openGraph?: OpenGraphData;
 }
 
