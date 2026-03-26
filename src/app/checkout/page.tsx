@@ -116,6 +116,13 @@ export default function CheckoutPage() {
     number: '', name: '', expiry: '', cvv: '', installments: 1
   });
 
+  // Calculos (antes dos useEffects que dependem deles)
+  const shippingPrice = selectedShipping ? parseFloat(selectedShipping.price) : 0;
+  const subtotal = totalPrice;
+  const pixDiscount = paymentMethod === 'pix' ? subtotal * 0.05 : 0;
+  const total = subtotal + shippingPrice - pixDiscount;
+  const toCents = (value: number) => Math.round(value * 100);
+
   // Inicializar MercadoPago SDK
   useEffect(() => {
     const initMP = () => {
@@ -144,16 +151,16 @@ export default function CheckoutPage() {
   }, []);
 
   // Buscar parcelas do MP quando o BIN do cartão muda (6+ dígitos)
+  const cardBin = card.number.replace(/\D/g, '').substring(0, 6);
   useEffect(() => {
-    const bin = card.number.replace(/\D/g, '').substring(0, 6);
-    if (bin.length < 6 || paymentMethod !== 'credit_card') return;
+    if (cardBin.length < 6 || paymentMethod !== 'credit_card') return;
 
     const fetchInstallments = async () => {
       try {
         const response = await fetch('/api/mercadopago/installments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bin, amount: toCents(total) }),
+          body: JSON.stringify({ bin: cardBin, amount: toCents(total) }),
         });
         const data = await response.json();
         if (data.success && data.installments) {
@@ -167,7 +174,7 @@ export default function CheckoutPage() {
     };
 
     fetchInstallments();
-  }, [card.number.replace(/\D/g, '').substring(0, 6), total, paymentMethod]);
+  }, [cardBin, total, paymentMethod]);
 
   // Timer do PIX
   useEffect(() => {
@@ -245,15 +252,6 @@ export default function CheckoutPage() {
     const s = seconds % 60;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
-
-  // Calculos
-  const shippingPrice = selectedShipping ? parseFloat(selectedShipping.price) : 0;
-  const subtotal = totalPrice;
-  const pixDiscount = paymentMethod === 'pix' ? subtotal * 0.05 : 0;
-  const total = subtotal + shippingPrice - pixDiscount;
-
-  // Converter para centavos para AppMax
-  const toCents = (value: number) => Math.round(value * 100);
 
   const getInstallmentOptions = () => {
     // Se tem dados do MP, usar eles
