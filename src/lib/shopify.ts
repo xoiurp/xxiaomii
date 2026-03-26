@@ -618,7 +618,9 @@ export async function getProductByHandle(
           {namespace: "custom", key: "sw_resolucao"},
           {namespace: "custom", key: "sw_tamanho_tela"},
           {namespace: "custom", key: "sw_tela_sensivel_ao_toque"},
-          {namespace: "custom", key: "sw_tipo_tela"}
+          {namespace: "custom", key: "sw_tipo_tela"},
+          # Descrição longa para SEO (renderizada fora do iframe)
+          {namespace: "custom", key: "descricao_longa"}
         ]) {
           key
           value

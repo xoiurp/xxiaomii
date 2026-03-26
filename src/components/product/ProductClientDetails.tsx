@@ -793,7 +793,7 @@ export default function ProductClientDetails({
                         metafield.value.trim() !== '' &&
                         (metafield.namespace === 'custom' || metafield.namespace === 'specs') &&
                         // Oculta os metafields específicos visualmente, incluindo os de controle de HTML/fonte
-                        !['use custom rem base', 'rem base font size', 'html mobile', 'mobile font size', 'mobile html url'].includes(
+                        !['use custom rem base', 'rem base font size', 'html mobile', 'mobile font size', 'mobile html url', 'descricao longa'].includes(
                           metafield.key.toLowerCase().replace(/[\._-]/g, ' ').replace(/\s+/g, ' ').trim()
                         )
                       ) // Adiciona verificação para 'metafield' ser válido, inclui namespace 'specs' e oculta específicos
@@ -835,6 +835,22 @@ export default function ProductClientDetails({
             </Accordion>
           </div>
         )}
+
+        {/* Descrição longa para SEO (conteúdo real no HTML, fora do iframe) */}
+        {(() => {
+          const descricaoLonga = product.metafields?.find(
+            mf => mf && mf.namespace === 'custom' && mf.key === 'descricao_longa'
+          )?.value;
+          if (!descricaoLonga) return null;
+          return (
+            <div className="w-full mt-8 mb-8">
+              <article className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Sobre este produto</h2>
+                <div dangerouslySetInnerHTML={{ __html: descricaoLonga }} />
+              </article>
+            </div>
+          );
+        })()}
 
         {/* Título da seção "Detalhes do Produto" */}
         <div className="w-full mt-12 border-t border-gray-200 pt-12">

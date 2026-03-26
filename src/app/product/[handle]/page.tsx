@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
+import type { Metadata } from 'next';
 import { getProductByHandle, getProducts } from '@/lib/shopify'; // Adicionado getProducts
 import ProductClientDetails from '@/components/product/ProductClientDetails';
 import { Product } from '@/lib/shopify'; // Importar o tipo Product se necessário para generateStaticParams
@@ -25,6 +26,36 @@ export async function generateStaticParams() {
   }));
 }
 
+
+// Gerar metadata dinâmica para SEO (title, description, og)
+export async function generateMetadata({ params }: { params: ProductPageParams }): Promise<Metadata> {
+  const product = await getProductByHandle(params.handle, { revalidate: 300, tags: [`product:${params.handle}`] });
+
+  if (!product) {
+    return { title: 'Produto não encontrado' };
+  }
+
+  const descricaoLonga = product.metafields?.find(
+    mf => mf && mf.namespace === 'custom' && mf.key === 'descricao_longa'
+  )?.value;
+
+  const cleanDescription = descricaoLonga
+    ? descricaoLonga.replace(/<[^>]+>/g, '').substring(0, 160)
+    : product.description?.substring(0, 160) || `${product.title} - Compre na Mimi Brasil`;
+
+  const mainImage = product.images?.edges?.[0]?.node?.transformedSrc;
+
+  return {
+    title: `${product.title} | Mimi Brasil`,
+    description: cleanDescription,
+    openGraph: {
+      title: product.title,
+      description: cleanDescription,
+      images: mainImage ? [{ url: mainImage }] : [],
+      type: 'website',
+    },
+  };
+}
 
 // Função auxiliar para ler o conteúdo do CSS
 async function getCssContent(filePath: string): Promise<string> {
