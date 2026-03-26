@@ -372,6 +372,14 @@ export default function CheckoutPage() {
   // PROCESSAR PAGAMENTO VIA MERCADO PAGO
   // ========================================
   const processPayment = async () => {
+    console.log('=== PROCESS PAYMENT INICIADO ===');
+    console.log('paymentMethod:', paymentMethod);
+    console.log('cart items:', cart.length);
+    console.log('total:', total);
+    console.log('shippingPrice:', shippingPrice);
+    console.log('selectedShipping:', selectedShipping);
+    console.log('customer:', customer);
+
     setIsProcessing(true);
     setError(null);
 
@@ -469,9 +477,12 @@ export default function CheckoutPage() {
         }),
       });
 
+      console.log('=== FETCH RESPONSE ===', response.status, response.statusText);
       const data = await response.json();
+      console.log('=== RESPONSE DATA ===', JSON.stringify(data).substring(0, 500));
 
       if (!response.ok) {
+        console.error('=== API ERROR ===', data);
         throw new Error(data.error || 'Erro ao processar pagamento');
       }
 
@@ -491,9 +502,12 @@ export default function CheckoutPage() {
         }
       }
     } catch (err: any) {
-      console.error('Checkout error:', err);
+      console.error('=== CHECKOUT ERROR ===', err);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
       setError(err.message || 'Erro ao processar pagamento. Tente novamente.');
     } finally {
+      console.log('=== PROCESS PAYMENT FINALIZADO ===');
       setIsProcessing(false);
     }
   };
