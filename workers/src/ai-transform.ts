@@ -276,7 +276,7 @@ function generateOpenGraph(pageData: PageData) {
     image: pageData.images?.[0],
     url: pageData.url,
     type: 'product',
-    siteName: 'ShopMi - Xiaomi Oficial',
+    siteName: 'Mimi Brasil - Loja Oficial',
   };
 }
 
@@ -323,6 +323,9 @@ ${JSON.stringify(enhancements.schema, null, 0)}
   if (enhancements.imageAlt) {
     enhanced = enhanceImageAltTexts(enhanced, enhancements.imageAlt);
   }
+
+  // 6. Generalizar logo e referências à marca no site
+  enhanced = generalizeSiteBranding(enhanced);
 
   return enhanced;
 }
@@ -699,6 +702,38 @@ function extractKeywords(text: string): string[] {
 }
 
 // ============================================
+// Site Branding Generalization
+// ============================================
+
+/**
+ * Generaliza referências à marca do site no HTML para bots.
+ * Troca "Mi Brasil" → "Mimi Brasil" em alt texts, titles, etc.
+ */
+function generalizeSiteBranding(html: string): string {
+  let result = html;
+
+  // Alt text do logo: "Mi Brasil Logo" → "Mimi Brasil"
+  result = result.replace(
+    /alt=["']Mi Brasil Logo["']/gi,
+    'alt="Mimi Brasil"'
+  );
+
+  // Variações do alt do logo
+  result = result.replace(
+    /alt=["']Mi Brasil["']/gi,
+    'alt="Mimi Brasil"'
+  );
+
+  // og:site_name (caso já exista no HTML original)
+  result = result.replace(
+    /content=["']ShopMi - Xiaomi Oficial["']/gi,
+    'content="Mimi Brasil - Loja Oficial"'
+  );
+
+  return result;
+}
+
+// ============================================
 // Homepage Enhancements
 // ============================================
 
@@ -710,8 +745,8 @@ function generateHomeEnhancements(html: string, bot: BotInfo, url: URL): SEOEnha
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'Xiaomi do Brasil',
-      alternateName: 'MiBrasil',
+      name: 'Mimi Brasil',
+      alternateName: 'Mimi Brasil',
       url: `${url.protocol}//${url.host}`,
       potentialAction: {
         '@type': 'SearchAction',
@@ -725,7 +760,7 @@ function generateHomeEnhancements(html: string, bot: BotInfo, url: URL): SEOEnha
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: 'Xiaomi do Brasil',
+      name: 'Mimi Brasil',
       url: `${url.protocol}//${url.host}`,
       logo: `${url.protocol}//${url.host}/assets/images/novo-logo.svg`,
       sameAs: [],
@@ -739,7 +774,7 @@ function generateHomeEnhancements(html: string, bot: BotInfo, url: URL): SEOEnha
 
   // 2. Open Graph para homepage
   enhancements.openGraph = {
-    title: 'Xiaomi do Brasil - Loja Oficial',
+    title: 'Mimi Brasil - Loja Oficial',
     description: 'Smartphones, smartwatches, fones de ouvido e acessórios. Produtos originais com garantia.',
     image: `${url.protocol}//${url.host}/assets/images/novo-logo.svg`,
     url: `${url.protocol}//${url.host}`,
