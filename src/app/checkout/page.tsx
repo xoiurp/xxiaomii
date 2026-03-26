@@ -128,7 +128,7 @@ export default function CheckoutPage() {
     const initMP = () => {
       if (typeof window !== 'undefined' && window.MercadoPago) {
         const mp = new window.MercadoPago(
-          process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'TEST-ca7255fd-531e-4d29-b782-b7e5ab5c7a8a',
+          process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'APP_USR-07ec815f-f931-4a73-932d-bedc1cce1a3a',
           { locale: 'pt-BR' }
         );
         setMpSdk(mp);
