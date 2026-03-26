@@ -8,7 +8,6 @@ interface CheckoutRequest {
     email: string
     phone: string
     document_number: string
-    ip: string
   }
   address: {
     postcode: string
@@ -29,12 +28,11 @@ interface CheckoutRequest {
   shipping_value: number // centavos
   discount_value: number // centavos
   payment_method: 'credit_card' | 'pix' | 'boleto'
-  credit_card?: {
-    card_token: string
-    payment_method_id: string
-    issuer_id: string
-    installments: number
-  }
+  // Campos MP no root (enviados pelo frontend)
+  card_token?: string
+  payment_method_id?: string
+  issuer_id?: number
+  installments?: number
 }
 
 interface NormalizedResponse {
@@ -88,7 +86,7 @@ export async function POST(request: NextRequest) {
     // ========================================
     // ETAPA 2: Montar payload para Mercado Pago
     // ========================================
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://shop.mibrasil.com'
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://xiaomidobrasil.com.br'
 
     const paymentPayload: Record<string, any> = {
       transaction_amount: toDecimal(totalCents),
@@ -116,7 +114,6 @@ export async function POST(request: NextRequest) {
         },
       },
       additional_info: {
-        ip_address: body.customer.ip,
         items: body.products.map((p) => ({
           id: p.sku,
           title: p.name,
@@ -138,17 +135,17 @@ export async function POST(request: NextRequest) {
 
     // Configurar metodo de pagamento
     if (body.payment_method === 'credit_card') {
-      if (!body.credit_card) {
+      if (!body.card_token) {
         return NextResponse.json(
-          { error: 'Credit card data is required' },
+          { error: 'Card token is required' },
           { status: 400 }
         )
       }
 
-      paymentPayload.token = body.credit_card.card_token
-      paymentPayload.payment_method_id = body.credit_card.payment_method_id
-      paymentPayload.issuer_id = body.credit_card.issuer_id
-      paymentPayload.installments = body.credit_card.installments
+      paymentPayload.token = body.card_token
+      paymentPayload.payment_method_id = body.payment_method_id
+      paymentPayload.issuer_id = body.issuer_id
+      paymentPayload.installments = body.installments || 1
     } else if (body.payment_method === 'pix') {
       paymentPayload.payment_method_id = 'pix'
     } else if (body.payment_method === 'boleto') {
@@ -247,7 +244,6 @@ function validateRequest(body: CheckoutRequest): string | null {
   if (!body.customer?.email) return 'Email is required'
   if (!body.customer?.phone) return 'Phone is required'
   if (!body.customer?.document_number) return 'CPF/CNPJ is required'
-  if (!body.customer?.ip) return 'Client IP is required'
   if (!body.address?.postcode) return 'Address postcode is required'
   if (!body.address?.street) return 'Address street is required'
   if (!body.address?.city) return 'Address city is required'
@@ -255,8 +251,8 @@ function validateRequest(body: CheckoutRequest): string | null {
   if (!body.products || body.products.length === 0) return 'At least one product is required'
   if (!['credit_card', 'pix', 'boleto'].includes(body.payment_method)) return 'Invalid payment method'
   if (body.payment_method === 'credit_card') {
-    if (!body.credit_card?.card_token) return 'Card token is required'
-    if (!body.credit_card?.payment_method_id) return 'Payment method ID is required'
+    if (!body.card_token) return 'Card token is required'
+    if (!body.payment_method_id) return 'Payment method ID is required'
   }
   return null
 }
