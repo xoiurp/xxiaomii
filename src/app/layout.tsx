@@ -42,9 +42,9 @@ export default function RootLayout({
       <body
         className={`${miSans.variable} antialiased`}
       >
-        {/* AppMax JS - Obrigatorio para PCI DSS (coleta de IP + tokenizacao de cartao) */}
+        {/* MercadoPago.js v2 - Tokenização de cartão PCI DSS */}
         <Script
-          src="https://scripts.appmax.com.br/appmax.min.js"
+          src="https://sdk.mercadopago.com/js/v2"
           strategy="afterInteractive"
         />
 

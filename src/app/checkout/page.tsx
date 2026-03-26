@@ -59,22 +59,26 @@ interface PaymentResult {
 
 interface OrderResult {
   id: string;
-  appmax_order_id: number;
+  mp_payment_id: number;
   status: string;
   total: number;
+}
+
+interface InstallmentOption {
+  installments: number;
+  installment_value: number; // centavos
+  total: number; // centavos
+  has_interest: boolean;
+  message: string;
 }
 
 type PaymentMethod = 'credit_card' | 'pix' | 'boleto';
 type CheckoutStep = 'customer' | 'address' | 'payment' | 'review';
 
-// Declaracao do AppmaxScripts global (carregado via CDN no layout)
+// Declaracao do MercadoPago JS SDK (carregado via CDN no layout)
 declare global {
   interface Window {
-    AppmaxScripts?: {
-      init: (onSuccess: Function, onError: Function, externalId: string, onUpdate?: Function, onAuthorize?: Function) => void;
-      getIp?: () => string;
-    };
-    appmaxClientIp?: string;
+    MercadoPago?: new (publicKey: string, options?: { locale: string }) => any;
   }
 }
 
@@ -87,8 +91,11 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [clientIp, setClientIp] = useState<string>('');
   const [copiedEmv, setCopiedEmv] = useState(false);
+  const [mpSdk, setMpSdk] = useState<any>(null);
+  const [mpInstallments, setMpInstallments] = useState<InstallmentOption[]>([]);
+  const [mpPaymentMethodId, setMpPaymentMethodId] = useState<string>('');
+  const [mpIssuerId, setMpIssuerId] = useState<number | undefined>();
 
   // Resultado do pagamento
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
@@ -109,33 +116,58 @@ export default function CheckoutPage() {
     number: '', name: '', expiry: '', cvv: '', installments: 1
   });
 
-  // Inicializar AppMax JS e coletar IP
+  // Inicializar MercadoPago SDK
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.AppmaxScripts) {
-      window.AppmaxScripts.init(
-        (data: any) => {
-          const ip = data?.ip || '';
-          setClientIp(ip);
-          window.appmaxClientIp = ip;
-        },
-        (err: any) => {
-          console.error('AppMax JS error:', err);
-        },
-        '' // external_id - sera preenchido quando tivermos
-      );
-    }
-    // Fallback: buscar IP via API publica se AppMax JS nao carregar
-    if (!clientIp) {
-      fetch('https://api.ipify.org?format=json')
-        .then(r => r.json())
-        .then(data => {
-          if (!clientIp && data.ip) {
-            setClientIp(data.ip);
-          }
-        })
-        .catch(() => {});
+    const initMP = () => {
+      if (typeof window !== 'undefined' && window.MercadoPago) {
+        const mp = new window.MercadoPago(
+          process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || 'TEST-ca7255fd-531e-4d29-b782-b7e5ab5c7a8a',
+          { locale: 'pt-BR' }
+        );
+        setMpSdk(mp);
+        console.log('MercadoPago SDK initialized');
+      }
+    };
+
+    // Tentar imediatamente ou aguardar script carregar
+    if (window.MercadoPago) {
+      initMP();
+    } else {
+      const interval = setInterval(() => {
+        if (window.MercadoPago) {
+          initMP();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
     }
   }, []);
+
+  // Buscar parcelas do MP quando o BIN do cartão muda (6+ dígitos)
+  useEffect(() => {
+    const bin = card.number.replace(/\D/g, '').substring(0, 6);
+    if (bin.length < 6 || paymentMethod !== 'credit_card') return;
+
+    const fetchInstallments = async () => {
+      try {
+        const response = await fetch('/api/mercadopago/installments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bin, amount: toCents(total) }),
+        });
+        const data = await response.json();
+        if (data.success && data.installments) {
+          setMpInstallments(data.installments);
+          if (data.payment_method_id) setMpPaymentMethodId(data.payment_method_id);
+          if (data.issuer_id) setMpIssuerId(data.issuer_id);
+        }
+      } catch (err) {
+        console.error('Error fetching installments:', err);
+      }
+    };
+
+    fetchInstallments();
+  }, [card.number.replace(/\D/g, '').substring(0, 6), total, paymentMethod]);
 
   // Timer do PIX
   useEffect(() => {
@@ -224,6 +256,18 @@ export default function CheckoutPage() {
   const toCents = (value: number) => Math.round(value * 100);
 
   const getInstallmentOptions = () => {
+    // Se tem dados do MP, usar eles
+    if (mpInstallments.length > 0) {
+      return mpInstallments.map(inst => ({
+        installments: inst.installments,
+        value: inst.installment_value / 100, // converter centavos para reais
+        total: inst.total / 100,
+        hasInterest: inst.has_interest,
+        message: inst.message,
+      }));
+    }
+
+    // Fallback local (antes de digitar o cartão)
     const options = [];
     for (let i = 1; i <= 12; i++) {
       const value = total / i;
@@ -287,7 +331,7 @@ export default function CheckoutPage() {
   }, [paymentResult]);
 
   // ========================================
-  // PROCESSAR PAGAMENTO REAL VIA APPMAX
+  // PROCESSAR PAGAMENTO VIA MERCADO PAGO
   // ========================================
   const processPayment = async () => {
     setIsProcessing(true);
@@ -299,7 +343,7 @@ export default function CheckoutPage() {
       const firstName = nameParts[0];
       const lastName = nameParts.slice(1).join(' ');
 
-      // Montar produtos para AppMax (valores em centavos)
+      // Montar produtos (valores em centavos)
       const products = cart.map(item => ({
         sku: item.variantId || item.id,
         name: item.title,
@@ -308,21 +352,36 @@ export default function CheckoutPage() {
         type: 'physical' as const,
       }));
 
-      // Montar dados do cartao se necessario
-      let creditCardData = undefined;
+      // Tokenizar cartão via MercadoPago SDK (client-side)
+      let cardToken: string | undefined;
+      let paymentMethodId = paymentMethod === 'pix' ? 'pix' : paymentMethod === 'boleto' ? 'bolbradesco' : mpPaymentMethodId;
+
       if (paymentMethod === 'credit_card') {
+        if (!mpSdk) {
+          throw new Error('SDK do Mercado Pago não carregou. Recarregue a página.');
+        }
+
         const expiryParts = card.expiry.split('/');
-        creditCardData = {
-          number: card.number.replace(/\s/g, ''),
-          cvv: card.cvv,
-          expiration_month: expiryParts[0],
-          expiration_year: expiryParts[1],
-          holder_name: card.name,
-          installments: card.installments,
-        };
+        try {
+          const tokenResult = await mpSdk.createCardToken({
+            cardNumber: card.number.replace(/\s/g, ''),
+            cardholderName: card.name,
+            cardExpirationMonth: expiryParts[0],
+            cardExpirationYear: '20' + expiryParts[1],
+            securityCode: card.cvv,
+            identificationType: 'CPF',
+            identificationNumber: customer.cpf.replace(/\D/g, ''),
+          });
+
+          cardToken = tokenResult.id;
+          if (!cardToken) throw new Error('Token não gerado');
+        } catch (tokenErr: any) {
+          console.error('Card tokenization error:', tokenErr);
+          throw new Error('Erro ao processar dados do cartão. Verifique os dados e tente novamente.');
+        }
       }
 
-      const response = await fetch('/api/appmax/checkout', {
+      const response = await fetch('/api/mercadopago/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -332,7 +391,6 @@ export default function CheckoutPage() {
             email: customer.email,
             phone: customer.phone,
             document_number: customer.cpf,
-            ip: clientIp || '0.0.0.0',
           },
           address: {
             postcode: address.cep,
@@ -347,7 +405,10 @@ export default function CheckoutPage() {
           shipping_value: toCents(shippingPrice),
           discount_value: toCents(pixDiscount),
           payment_method: paymentMethod,
-          credit_card: creditCardData,
+          card_token: cardToken,
+          payment_method_id: paymentMethodId,
+          issuer_id: mpIssuerId,
+          installments: card.installments,
         }),
       });
 
@@ -363,13 +424,13 @@ export default function CheckoutPage() {
       setOrderComplete(true);
       clearCart();
 
-      // Iniciar timer do PIX (30 minutos padrao)
+      // Iniciar timer do PIX (30 minutos padrão)
       if (data.payment?.method === 'pix') {
         if (data.payment.expires_at) {
           const expiresAt = new Date(data.payment.expires_at).getTime();
           setPixTimeLeft(Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)));
         } else {
-          setPixTimeLeft(30 * 60); // 30 minutos fallback
+          setPixTimeLeft(30 * 60);
         }
       }
     } catch (err: any) {
@@ -396,7 +457,7 @@ export default function CheckoutPage() {
             <p className="text-gray-600 mb-6">Seu pagamento foi aprovado. Você receberá um email com os detalhes.</p>
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <p className="text-sm text-gray-500">Número do pedido</p>
-              <p className="text-lg font-mono font-bold text-gray-900">#{orderResult.appmax_order_id}</p>
+              <p className="text-lg font-mono font-bold text-gray-900">#{orderResult.mp_payment_id}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <p className="text-sm text-gray-500">Total pago</p>
@@ -422,7 +483,7 @@ export default function CheckoutPage() {
             <p className="text-gray-600 mb-4">Escaneie o QR Code ou copie o código para finalizar o pagamento.</p>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-4">
-              <p className="text-sm text-gray-500">Pedido #{orderResult.appmax_order_id}</p>
+              <p className="text-sm text-gray-500">Pedido #{orderResult.mp_payment_id}</p>
               <p className="text-lg font-bold text-[#FF6700]">{formatCentsAsCurrency(orderResult.total)}</p>
             </div>
 
@@ -492,7 +553,7 @@ export default function CheckoutPage() {
             <p className="text-gray-600 mb-4">Baixe o boleto ou copie a linha digitável para efetuar o pagamento.</p>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-4">
-              <p className="text-sm text-gray-500">Pedido #{orderResult.appmax_order_id}</p>
+              <p className="text-sm text-gray-500">Pedido #{orderResult.mp_payment_id}</p>
               <p className="text-lg font-bold text-[#FF6700]">{formatCentsAsCurrency(orderResult.total)}</p>
               {paymentResult.due_date && (
                 <p className="text-sm text-gray-500 mt-1">Vencimento: {paymentResult.due_date}</p>
