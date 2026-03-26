@@ -84,7 +84,7 @@ declare global {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, totalPrice, totalItems, selectedShipping, clearCart } = useCart();
+  const { cart, totalPrice, totalItems, selectedShipping, setSelectedShipping, clearCart } = useCart();
 
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('customer');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit_card');
@@ -96,6 +96,9 @@ export default function CheckoutPage() {
   const [mpInstallments, setMpInstallments] = useState<InstallmentOption[]>([]);
   const [mpPaymentMethodId, setMpPaymentMethodId] = useState<string>('');
   const [mpIssuerId, setMpIssuerId] = useState<number | undefined>();
+  const [shippingOptions, setShippingOptions] = useState<any[]>([]);
+  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
   const [saveCard, setSaveCard] = useState(false);
 
   // Resultado do pagamento
@@ -219,6 +222,41 @@ export default function CheckoutPage() {
     }
   };
 
+  // Calcular frete quando CEP é preenchido na etapa de endereço
+  const calculateShipping = async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length !== 8) return;
+
+    setIsLoadingShipping(true);
+    setShippingError(null);
+
+    try {
+      const response = await fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cep: cleanCep }),
+      });
+      const data = await response.json();
+
+      if (Array.isArray(data) && data.length > 0) {
+        setShippingOptions(data);
+        // Selecionar a opção mais barata automaticamente se não tem frete selecionado
+        if (!selectedShipping) {
+          const cheapest = data.reduce((min: any, opt: any) =>
+            parseFloat(opt.price) < parseFloat(min.price) ? opt : min, data[0]);
+          setSelectedShipping(cheapest);
+        }
+      } else {
+        setShippingError('Nenhuma opção de frete encontrada para este CEP.');
+      }
+    } catch (err) {
+      console.error('Erro ao calcular frete:', err);
+      setShippingError('Erro ao calcular frete. Tente novamente.');
+    } finally {
+      setIsLoadingShipping(false);
+    }
+  };
+
   // Formatadores
   const formatCPF = (value: string) => {
     return value.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})/, '$1-$2').replace(/(-\d{2})\d+?$/, '$1');
@@ -295,6 +333,7 @@ export default function CheckoutPage() {
     if (!address.neighborhood) { setError('Digite o bairro'); return false; }
     if (!address.city) { setError('Digite a cidade'); return false; }
     if (!address.state) { setError('Digite o estado'); return false; }
+    if (!selectedShipping) { setError('Selecione uma opção de frete'); return false; }
     setError(null); return true;
   };
 
@@ -737,7 +776,7 @@ export default function CheckoutPage() {
                   <div className="grid sm:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">CEP *</label>
-                      <input type="text" value={address.cep} onChange={(e) => { const f = formatCEP(e.target.value); setAddress({ ...address, cep: f }); if (f.replace(/\D/g, '').length === 8) fetchAddressByCep(f); }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6700] focus:border-transparent outline-none" placeholder="00000-000" maxLength={9} />
+                      <input type="text" value={address.cep} onChange={(e) => { const f = formatCEP(e.target.value); setAddress({ ...address, cep: f }); if (f.replace(/\D/g, '').length === 8) { fetchAddressByCep(f); calculateShipping(f); } }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6700] focus:border-transparent outline-none" placeholder="00000-000" maxLength={9} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Endereço *</label>
@@ -767,6 +806,55 @@ export default function CheckoutPage() {
                       </select>
                     </div>
                   </div>
+
+                  {/* Opções de Frete */}
+                  {isLoadingShipping && (
+                    <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-lg">
+                      <Loader2 className="w-5 h-5 animate-spin text-[#FF6700]" />
+                      <span className="text-gray-600 text-sm">Calculando frete...</span>
+                    </div>
+                  )}
+
+                  {shippingError && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                      {shippingError}
+                    </div>
+                  )}
+
+                  {shippingOptions.length > 0 && (
+                    <div className="space-y-3 pt-4 border-t">
+                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                        <Truck className="w-5 h-5 text-[#FF6700]" />
+                        Opções de Entrega
+                      </h3>
+                      {shippingOptions.map((opt: any) => (
+                        <label
+                          key={opt.id}
+                          className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                            selectedShipping?.id === opt.id ? 'border-[#FF6700] bg-orange-50' : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="shipping"
+                              checked={selectedShipping?.id === opt.id}
+                              onChange={() => setSelectedShipping(opt)}
+                              className="w-4 h-4 text-[#FF6700] accent-[#FF6700]"
+                            />
+                            <div>
+                              <p className="font-medium text-gray-900">{opt.name || opt.company?.name || 'Envio'}</p>
+                              <p className="text-xs text-gray-500">
+                                {opt.delivery_time ? `${opt.delivery_time} dias úteis` :
+                                 opt.delivery_min && opt.delivery_max ? `${opt.delivery_min}-${opt.delivery_max} dias úteis` : ''}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="font-bold text-gray-900">{formatCurrency(parseFloat(opt.price))}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
