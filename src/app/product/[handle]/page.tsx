@@ -35,13 +35,16 @@ export async function generateMetadata({ params }: { params: ProductPageParams }
     return { title: 'Produto não encontrado' };
   }
 
+  const descriCurta = product.metafield?.value; // custom.descri_curta
   const descricaoLonga = product.metafields?.find(
     mf => mf && mf.namespace === 'custom' && mf.key === 'descricao_longa'
   )?.value;
 
-  const cleanDescription = descricaoLonga
-    ? descricaoLonga.replace(/<[^>]+>/g, '').substring(0, 160)
-    : product.description?.substring(0, 160) || `${product.title} - Compre na Mimi Brasil`;
+  const cleanDescription = descriCurta
+    ? descriCurta.substring(0, 160)
+    : descricaoLonga
+      ? descricaoLonga.replace(/<[^>]+>/g, '').substring(0, 160)
+      : product.description?.substring(0, 160) || `${product.title} - Compre na Mimi Brasil`;
 
   const mainImage = product.images?.edges?.[0]?.node?.transformedSrc;
 
