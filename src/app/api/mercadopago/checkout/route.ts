@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     const paymentPayload: Record<string, any> = {
       transaction_amount: toDecimal(totalCents),
-      description: body.products.map((p) => `${p.quantity}x ${p.name}`).join(', '),
+      description: body.products.map((p) => `${p.quantity}x ${generalizeProductName(p.name)}`).join(', '),
       statement_descriptor: 'MIMIBRASIL',
       external_reference: 'MIMI-' + Date.now(),
       notification_url: 'https://xiaomidobrasil.com.br/api/mercadopago/webhooks',
@@ -114,8 +114,8 @@ export async function POST(request: NextRequest) {
       additional_info: {
         items: body.products.map((p) => ({
           id: p.sku,
-          title: p.name,
-          description: p.name,
+          title: generalizeProductName(p.name),
+          description: generalizeProductName(p.name),
           category_id: 'electronics',
           quantity: p.quantity,
           unit_price: toDecimal(p.unit_value),
@@ -273,6 +273,59 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+/**
+ * Generaliza nome do produto removendo marcas protegidas.
+ * Mantém especificações técnicas e detecta categoria.
+ * Ex: "Xiaomi Redmi A5 64GB 4G" → "Smartphone 64GB 4G"
+ * Ex: "Amazfit Bip 5" → "Smartwatch Bip 5"
+ */
+function generalizeProductName(name: string): string {
+  const brandsToRemove = [
+    'Xiaomi', 'Redmi', 'Mi', 'Poco', 'Black Shark',
+    'Amazfit', 'Huami', 'Samsung', 'Apple', 'iPhone',
+  ]
+
+  // Detectar categoria
+  const categories: Record<string, RegExp[]> = {
+    'Carregador': [/\b(carregador|charger|adapter|fonte)\b/i, /\b\d+\s*w\b/i],
+    'Fone de Ouvido': [/\b(fone|headphone|earphone|earbud|airdots|buds)\b/i, /\b(wireless|bluetooth)\b/i],
+    'Smartwatch': [/\b(smartwatch|watch|relógio|band|fit|bip|gtr|gts|t-rex)\b/i],
+    'Tablet': [/\b(tablet|pad)\b/i],
+    'Notebook': [/\b(notebook|laptop)\b/i],
+    'Aspirador': [/\b(aspirador|vacuum)\b/i],
+    'Acessório': [/\b(capa|case|película|protetor)\b/i],
+    'Smartphone': [/\b(celular|smartphone|telefone|phone)\b/i, /\b(4g|5g)\b/i, /\b(note|redmi|poco)\s*\w*\d+/i],
+  }
+
+  let category = 'Produto Eletrônico'
+  const lowerName = name.toLowerCase()
+
+  for (const [cat, patterns] of Object.entries(categories)) {
+    if (patterns.some(p => p.test(lowerName))) {
+      category = cat
+      break
+    }
+  }
+
+  // Remover marcas
+  let generic = name
+  brandsToRemove.forEach(brand => {
+    generic = generic.replace(new RegExp(`\\b${brand}\\b`, 'gi'), '').trim()
+  })
+  generic = generic.replace(/\s+/g, ' ').trim()
+
+  // Remover redundância com categoria
+  const catWords = category.toLowerCase().split(/\s+/)
+  catWords.forEach(word => {
+    if (word.length > 2) {
+      generic = generic.replace(new RegExp(`\\b${word}\\b`, 'gi'), '').trim()
+    }
+  })
+  generic = generic.replace(/\s+/g, ' ').trim()
+
+  return generic.length > 0 ? `${category} ${generic}` : category
 }
 
 function validateRequest(body: CheckoutRequest): string | null {
