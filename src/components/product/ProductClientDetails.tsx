@@ -230,7 +230,9 @@ export default function ProductClientDetails({
     if (!variants) return []; // Retorna array vazio se variants for undefined
     variants.forEach(variant => {
       variant.selectedOptions?.forEach(option => { // Adiciona verificação para selectedOptions
-        if (option.name.toLowerCase() !== 'cor' && option.name.toLowerCase() !== 'color') {
+        const nameLower = option.name.toLowerCase();
+        const valueLower = option.value.toLowerCase();
+        if (nameLower !== 'cor' && nameLower !== 'color' && nameLower !== 'title' && valueLower !== 'default title') {
           if (!optionsMap[option.name]) {
             optionsMap[option.name] = new Set();
           }
@@ -274,10 +276,12 @@ export default function ProductClientDetails({
         setSelectedColor(uniqueColors[0]?.name || null);
       }
 
-      // 3. Extrai as outras opções (tudo exceto cor)
+      // 3. Extrai as outras opções (tudo exceto cor e "Title"/"Default Title" do Shopify)
       const initialSelections: { [key: string]: string } = {};
       firstAvailableVariant.selectedOptions.forEach(opt => {
-        if (opt.name.toLowerCase() !== 'cor' && opt.name.toLowerCase() !== 'color') {
+        const nameLower = opt.name.toLowerCase();
+        const valueLower = opt.value.toLowerCase();
+        if (nameLower !== 'cor' && nameLower !== 'color' && nameLower !== 'title' && valueLower !== 'default title') {
           initialSelections[opt.name] = opt.value;
         }
       });
@@ -308,24 +312,36 @@ export default function ProductClientDetails({
 
   // --- Encontrar Variante Selecionada ---
   const selectedVariant = useMemo(() => {
-    if (!selectedColor || productOptions.some(opt => !selectedOptions[opt.name])) {
-      return null; // Retorna null se alguma opção não estiver selecionada
+    const hasColors = uniqueColors.length > 0;
+    const hasOptions = productOptions.length > 0;
+
+    // Produto sem cor E sem opções → selecionar primeira variante disponível
+    if (!hasColors && !hasOptions) {
+      return variants?.find(v => (v.quantityAvailable ?? 0) > 0) || variants?.[0] || null;
     }
 
-    return variants?.find(variant => { // Adiciona verificação para variants
-      const colorMatch = variant.selectedOptions?.some( // Adiciona verificação para selectedOptions
-        opt => (opt.name.toLowerCase() === 'cor' || opt.name.toLowerCase() === 'color') && opt.value === selectedColor
-      );
-      if (!colorMatch) return false;
+    // Produto com cor: precisa ter cor selecionada
+    if (hasColors && !selectedColor) return null;
+
+    // Produto com opções: precisa ter todas selecionadas
+    if (hasOptions && productOptions.some(opt => !selectedOptions[opt.name])) return null;
+
+    return variants?.find(variant => {
+      if (hasColors) {
+        const colorMatch = variant.selectedOptions?.some(
+          opt => (opt.name.toLowerCase() === 'cor' || opt.name.toLowerCase() === 'color') && opt.value === selectedColor
+        );
+        if (!colorMatch) return false;
+      }
 
       return productOptions.every(optionInfo => {
         const selectedValue = selectedOptions[optionInfo.name];
-        return variant.selectedOptions?.some( // Adiciona verificação para selectedOptions
+        return variant.selectedOptions?.some(
           opt => opt.name === optionInfo.name && opt.value === selectedValue
         );
       });
     });
-  }, [variants, selectedColor, selectedOptions, productOptions]);
+  }, [variants, selectedColor, selectedOptions, productOptions, uniqueColors]);
 
   console.log('selectedVariant atualizado:', selectedVariant); // Log para depuração
 
