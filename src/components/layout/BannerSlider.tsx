@@ -2,23 +2,24 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
+import Link from "next/link";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const desktopImages = [
-  "/assets/images/banner1-mibando10.webp",
-  "/assets/images/banner2-watch5.webp",
-  "/assets/images/banner3-buds8lite.webp",
-  "/assets/images/banner4-consumidor.webp",
+const desktopBanners = [
+  { src: "/assets/images/banner1-mibando10.webp", href: "/product/mi-smart-band-10", alt: "Redmi Band 10" },
+  { src: "/assets/images/banner2-watch5.webp", href: "/product/redmi-watch-5", alt: "Redmi Watch 5" },
+  { src: "/assets/images/banner3-buds8lite.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
+  { src: "/assets/images/banner4-consumidor.webp", href: "/shop", alt: "Dia do Consumidor" },
 ];
 
-const mobileImages = [
-  "/assets/images/buds-lite-vertical.webp",
-  "/assets/images/buds-lite-vertical-1.webp",
-  "/assets/images/buds-lite-vertical-2.webp",
-  "/assets/images/Group 178.webp",
+const mobileBanners = [
+  { src: "/assets/images/buds-lite-vertical.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
+  { src: "/assets/images/buds-lite-vertical-1.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
+  { src: "/assets/images/buds-lite-vertical-2.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
+  { src: "/assets/images/Group 178.webp", href: "/shop", alt: "Produtos" },
 ];
 
 const BannerSlider = () => {
@@ -34,17 +35,17 @@ const BannerSlider = () => {
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           className="w-full h-full"
         >
-          {desktopImages.map((src, index) => (
+          {desktopBanners.map((banner, index) => (
             <SwiperSlide key={index}>
-              <div className="w-full h-full relative">
+              <Link href={banner.href} className="w-full h-full relative block cursor-pointer">
                 <Image
-                  src={src}
-                  alt={`Banner ${index + 1}`}
+                  src={banner.src}
+                  alt={banner.alt}
                   fill={true}
                   className="object-cover"
                   priority={index === 0}
                 />
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -59,17 +60,17 @@ const BannerSlider = () => {
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           className="w-full h-full"
         >
-          {mobileImages.map((src, index) => (
+          {mobileBanners.map((banner, index) => (
             <SwiperSlide key={index}>
-              <div className="w-full h-full relative">
+              <Link href={banner.href} className="w-full h-full relative block cursor-pointer">
                 <Image
-                  src={src}
-                  alt={`Banner ${index + 1}`}
+                  src={banner.src}
+                  alt={banner.alt}
                   fill={true}
                   className="object-cover"
                   priority={index === 0}
                 />
-              </div>
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
