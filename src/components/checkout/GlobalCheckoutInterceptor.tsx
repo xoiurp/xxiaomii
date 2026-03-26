@@ -35,6 +35,10 @@ export default function GlobalCheckoutInterceptor() {
         value.includes('checkout');
 
       if (!isCheckoutIntent) return;
+
+      // Não interceptar se já estamos na página de checkout
+      if (window.location.pathname === '/checkout') return;
+
       if (!cart || cart.length === 0) {
         console.log('[Checkout Interceptor] Carrinho vazio, ignorando');
         return;
