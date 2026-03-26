@@ -173,7 +173,26 @@ export async function POST(request: NextRequest) {
     // ========================================
     const mpResponse = await createPayment(paymentPayload)
 
-    console.log('MercadoPago payment created:', mpResponse.id, 'status:', mpResponse.status)
+    // Log completo da resposta para debug
+    console.log('MercadoPago payment response:', JSON.stringify({
+      id: mpResponse.id,
+      status: mpResponse.status,
+      status_detail: mpResponse.status_detail,
+      payment_method_id: mpResponse.payment_method_id,
+      payment_type_id: mpResponse.payment_type_id,
+      transaction_amount: mpResponse.transaction_amount,
+      shipping_amount: mpResponse.shipping_amount,
+      installments: mpResponse.installments,
+      date_of_expiration: mpResponse.date_of_expiration,
+      point_of_interaction: mpResponse.point_of_interaction ? {
+        type: mpResponse.point_of_interaction.type,
+        has_qr_code: !!mpResponse.point_of_interaction.transaction_data?.qr_code,
+        has_qr_base64: !!mpResponse.point_of_interaction.transaction_data?.qr_code_base64,
+        has_ticket_url: !!mpResponse.point_of_interaction.transaction_data?.ticket_url,
+      } : null,
+      transaction_details: mpResponse.transaction_details,
+      card: mpResponse.card ? { last_four: mpResponse.card.last_four_digits } : null,
+    }))
 
     // ========================================
     // ETAPA 4: Normalizar resposta por metodo
@@ -183,14 +202,15 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.payment_method === 'pix') {
-      const transactionData = mpResponse.point_of_interaction?.transaction_data
+      const txData = mpResponse.point_of_interaction?.transaction_data
       paymentData = {
         method: 'pix',
-        qr_code: transactionData?.qr_code_base64
-          ? `data:image/png;base64,${transactionData.qr_code_base64}`
+        qr_code: txData?.qr_code_base64
+          ? `data:image/png;base64,${txData.qr_code_base64}`
           : undefined,
-        emv_code: transactionData?.qr_code || undefined,
+        emv_code: txData?.qr_code || undefined,
         expires_at: mpResponse.date_of_expiration || undefined,
+        url: txData?.ticket_url || undefined,
       }
     } else if (body.payment_method === 'boleto') {
       paymentData = {

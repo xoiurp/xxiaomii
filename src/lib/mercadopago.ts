@@ -109,13 +109,23 @@ export interface MercadoPagoPaymentResponse {
   date_created: string
   date_approved: string | null
   date_last_updated: string
+  date_of_expiration?: string
+  money_release_date: string | null
+  issuer_id?: number
   payment_method_id: string
   payment_type_id: 'credit_card' | 'debit_card' | 'bank_transfer' | 'ticket' | 'account_money'
   transaction_amount: number
+  shipping_amount: number
+  coupon_amount: number
+  taxes_amount?: number
   currency_id: string
   description: string
   external_reference: string | null
-  payer: MercadoPagoPayer & { id?: string }
+  statement_descriptor?: string
+  notification_url?: string
+  processing_mode?: string
+  collector_id?: number
+  payer: MercadoPagoPayer & { id?: string | number }
   metadata: Record<string, unknown>
   installments: number
   transaction_details?: {
@@ -128,6 +138,8 @@ export interface MercadoPagoPaymentResponse {
     external_resource_url?: string
   }
   point_of_interaction?: {
+    type?: string
+    application_data?: { name?: string; version?: string }
     transaction_data?: MercadoPagoPixData
   }
   barcode?: {
@@ -136,13 +148,16 @@ export interface MercadoPagoPaymentResponse {
   fee_details?: Array<{ type: string; amount: number; fee_payer: string }>
   card?: {
     id?: string | null
-    first_six_digits?: string
-    last_four_digits?: string
-    expiration_month?: number
-    expiration_year?: number
-    date_created?: string
-    cardholder?: { name: string; identification?: { number: string; type: string } }
+    first_six_digits?: string | null
+    last_four_digits?: string | number | null
+    expiration_month?: number | null
+    expiration_year?: number | null
+    date_created?: string | null
+    date_last_updated?: string | null
+    cardholder?: { name: string | null; identification?: { number: string; type: string } }
   }
+  transaction_amount_refunded?: number
+  additional_info?: Record<string, any>
 }
 
 export interface MercadoPagoInstallment {
