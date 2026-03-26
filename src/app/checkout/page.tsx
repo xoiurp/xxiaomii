@@ -96,6 +96,7 @@ export default function CheckoutPage() {
   const [mpInstallments, setMpInstallments] = useState<InstallmentOption[]>([]);
   const [mpPaymentMethodId, setMpPaymentMethodId] = useState<string>('');
   const [mpIssuerId, setMpIssuerId] = useState<number | undefined>();
+  const [saveCard, setSaveCard] = useState(false);
 
   // Resultado do pagamento
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
@@ -375,7 +376,26 @@ export default function CheckoutPage() {
           if (!cardToken) throw new Error('Token não gerado');
         } catch (tokenErr: any) {
           console.error('Card tokenization error:', tokenErr);
-          throw new Error('Erro ao processar dados do cartão. Verifique os dados e tente novamente.');
+          const mpError = tokenErr?.cause || tokenErr?.message || '';
+          const errorMessages: Record<string, string> = {
+            '205': 'Digite o número do cartão',
+            '208': 'Selecione o mês de vencimento',
+            '209': 'Selecione o ano de vencimento',
+            '212': 'Informe seu documento',
+            '213': 'Informe seu documento',
+            '214': 'Informe seu documento',
+            '220': 'Informe o banco emissor',
+            '221': 'Informe o nome impresso no cartão',
+            '224': 'Digite o código de segurança',
+            'E301': 'Número do cartão inválido',
+            'E302': 'Código de segurança inválido',
+            '316': 'Nome do titular inválido',
+            '325': 'Mês de vencimento inválido',
+            '326': 'Ano de vencimento inválido',
+          };
+          const errorCode = String(tokenErr?.cause?.[0]?.code || tokenErr?.code || '');
+          const friendlyMessage = errorMessages[errorCode] || 'Erro ao processar dados do cartão. Verifique os dados e tente novamente.';
+          throw new Error(friendlyMessage);
         }
       }
 

@@ -86,12 +86,12 @@ export async function POST(request: NextRequest) {
     // ========================================
     // ETAPA 2: Montar payload para Mercado Pago
     // ========================================
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://xiaomidobrasil.com.br'
-
     const paymentPayload: Record<string, any> = {
       transaction_amount: toDecimal(totalCents),
       description: body.products.map((p) => `${p.quantity}x ${p.name}`).join(', '),
-      notification_url: `${baseUrl}/api/mercadopago/webhooks`,
+      statement_descriptor: 'MIMIBRASIL',
+      external_reference: 'MIMI-' + Date.now(),
+      notification_url: 'https://xiaomidobrasil.com.br/api/mercadopago/webhooks',
       payer: {
         email: body.customer.email,
         first_name: body.customer.first_name,
@@ -130,6 +130,19 @@ export async function POST(request: NextRequest) {
             state_name: body.address.state,
           },
         },
+        payer: {
+          first_name: body.customer.first_name,
+          last_name: body.customer.last_name,
+          phone: {
+            area_code: body.customer.phone.replace(/\D/g, '').slice(0, 2),
+            number: body.customer.phone.replace(/\D/g, '').slice(2),
+          },
+          address: {
+            zip_code: body.address.postcode.replace(/\D/g, ''),
+            street_name: body.address.street,
+            street_number: body.address.number,
+          },
+        },
       },
     }
 
@@ -146,8 +159,10 @@ export async function POST(request: NextRequest) {
       paymentPayload.payment_method_id = body.payment_method_id
       paymentPayload.issuer_id = body.issuer_id
       paymentPayload.installments = body.installments || 1
+      paymentPayload.three_d_secure_mode = 'optional'
     } else if (body.payment_method === 'pix') {
       paymentPayload.payment_method_id = 'pix'
+      paymentPayload.date_of_expiration = new Date(Date.now() + 30 * 60 * 1000).toISOString()
     } else if (body.payment_method === 'boleto') {
       paymentPayload.payment_method_id = 'bolbradesco'
     }

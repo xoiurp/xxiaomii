@@ -294,3 +294,45 @@ export async function refundPayment(
     body: JSON.stringify(amount != null ? { amount } : {}),
   })
 }
+
+// ---------------------------------------------------------------------------
+// Customer & Card management
+// ---------------------------------------------------------------------------
+
+/**
+ * Cria um customer no Mercado Pago para salvar cartoes.
+ */
+export async function createCustomer(email: string, firstName: string, lastName: string): Promise<any> {
+  return mpFetch('/v1/customers', {
+    method: 'POST',
+    body: JSON.stringify({ email, first_name: firstName, last_name: lastName }),
+  })
+}
+
+/**
+ * Busca um customer pelo email.
+ */
+export async function getCustomerByEmail(email: string): Promise<any> {
+  return mpFetch(`/v1/customers/search?email=${encodeURIComponent(email)}`)
+}
+
+/**
+ * Salva um cartao tokenizado no customer.
+ */
+export async function saveCardToCustomer(customerId: string, cardToken: string): Promise<any> {
+  return mpFetch(`/v1/customers/${customerId}/cards`, {
+    method: 'POST',
+    body: JSON.stringify({ token: cardToken }),
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Payment methods
+// ---------------------------------------------------------------------------
+
+/**
+ * Lista os metodos de pagamento disponiveis.
+ */
+export async function getPaymentMethods(): Promise<any> {
+  return mpFetch('/v1/payment_methods')
+}
