@@ -85,62 +85,62 @@ export async function POST(request: NextRequest) {
 
     // ========================================
     // ETAPA 2: Montar payload para Mercado Pago
+    // Seguindo estrutura exata da documentação oficial
     // ========================================
+    const phone = body.customer.phone.replace(/\D/g, '')
+    const cpf = body.customer.document_number.replace(/\D/g, '')
+    const cep = body.address.postcode.replace(/\D/g, '')
+    const streetNumber = parseInt(body.address.number) || 0
+
     const paymentPayload: Record<string, any> = {
       transaction_amount: toDecimal(totalCents),
       description: body.products.map((p) => `${p.quantity}x ${p.name}`).join(', '),
       statement_descriptor: 'MIMIBRASIL',
       external_reference: 'MIMI-' + Date.now(),
       notification_url: 'https://xiaomidobrasil.com.br/api/mercadopago/webhooks',
+      binary_mode: false,
+      installments: body.installments || 1,
       payer: {
+        entity_type: 'individual',
+        type: 'customer',
         email: body.customer.email,
         first_name: body.customer.first_name,
         last_name: body.customer.last_name,
         identification: {
-          type: body.customer.document_number.replace(/\D/g, '').length <= 11 ? 'CPF' : 'CNPJ',
-          number: body.customer.document_number.replace(/\D/g, ''),
-        },
-        phone: {
-          area_code: body.customer.phone.replace(/\D/g, '').slice(0, 2),
-          number: body.customer.phone.replace(/\D/g, '').slice(2),
-        },
-        address: {
-          zip_code: body.address.postcode.replace(/\D/g, ''),
-          street_name: body.address.street,
-          street_number: body.address.number,
-          neighborhood: body.address.district,
-          city: body.address.city,
-          federal_unit: body.address.state,
+          type: cpf.length <= 11 ? 'CPF' : 'CNPJ',
+          number: cpf,
         },
       },
       additional_info: {
         items: body.products.map((p) => ({
           id: p.sku,
           title: p.name,
+          description: p.name,
+          category_id: 'electronics',
           quantity: p.quantity,
           unit_price: toDecimal(p.unit_value),
-          category_id: p.type === 'digital' ? 'digital_goods' : 'electronics',
+          type: 'electronics',
         })),
-        shipments: {
-          receiver_address: {
-            zip_code: body.address.postcode.replace(/\D/g, ''),
-            street_name: body.address.street,
-            street_number: body.address.number,
-            city_name: body.address.city,
-            state_name: body.address.state,
-          },
-        },
         payer: {
           first_name: body.customer.first_name,
           last_name: body.customer.last_name,
           phone: {
-            area_code: body.customer.phone.replace(/\D/g, '').slice(0, 2),
-            number: body.customer.phone.replace(/\D/g, '').slice(2),
+            area_code: phone.slice(0, 2),
+            number: phone.slice(2),
           },
           address: {
-            zip_code: body.address.postcode.replace(/\D/g, ''),
+            zip_code: cep,
             street_name: body.address.street,
-            street_number: body.address.number,
+            street_number: streetNumber,
+          },
+        },
+        shipments: {
+          receiver_address: {
+            zip_code: cep,
+            state_name: body.address.state,
+            city_name: body.address.city,
+            street_name: body.address.street,
+            street_number: streetNumber,
           },
         },
       },
@@ -159,6 +159,7 @@ export async function POST(request: NextRequest) {
       paymentPayload.payment_method_id = body.payment_method_id
       paymentPayload.issuer_id = body.issuer_id
       paymentPayload.installments = body.installments || 1
+      paymentPayload.capture = true
       paymentPayload.three_d_secure_mode = 'optional'
     } else if (body.payment_method === 'pix') {
       paymentPayload.payment_method_id = 'pix'
