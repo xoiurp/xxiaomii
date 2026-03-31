@@ -125,8 +125,8 @@ export default function EnvioPage() {
           Você também pode acompanhar a entrega diretamente no seu painel de cliente,
           na seção &quot;Meus Pedidos&quot;. Caso tenha alguma dúvida sobre a entrega,
           entre em contato pelo e-mail{' '}
-          <a href="mailto:contato@mibrasil.com.br" className="text-[#FF6700] hover:underline">
-            contato@mibrasil.com.br
+          <a href="mailto:contato@mibrasil.com" className="text-[#FF6700] hover:underline">
+            contato@mibrasil.com
           </a>.
         </p>
       </section>

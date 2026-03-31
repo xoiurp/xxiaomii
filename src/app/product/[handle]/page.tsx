@@ -148,8 +148,8 @@ export default async function ProductPage({ params }: { params: ProductPageParam
     product.priceRange.minVariantPrice.currencyCode
   );
 
-  const desktopCss = await getCssContent('../main-desk-14c.css');
-  const mobileCss = await getCssContent('../main-mob-14.css');
+  const desktopCss = await getCssContent('./main-desk-14c.css');
+  const mobileCss = await getCssContent('./main-mob-14.css');
 
   return (
     <ProductClientDetails

@@ -100,8 +100,8 @@ export default function PoliticaDeDevolucaoPage() {
               <h3 className="font-medium mb-1">Entre em contato</h3>
               <p className="text-gray-600 text-sm sm:text-base">
                 Envie um e-mail para{' '}
-                <a href="mailto:contato@mibrasil.com.br" className="text-[#FF6700] hover:underline">
-                  contato@mibrasil.com.br
+                <a href="mailto:contato@mibrasil.com" className="text-[#FF6700] hover:underline">
+                  contato@mibrasil.com
                 </a>{' '}
                 com o número do pedido, fotos do produto (se houver defeito) e o motivo da solicitação.
               </p>
@@ -223,7 +223,7 @@ export default function PoliticaDeDevolucaoPage() {
           Nossa equipe está pronta para ajudar com qualquer dúvida sobre trocas e devoluções.
         </p>
         <a
-          href="mailto:contato@mibrasil.com.br"
+          href="mailto:contato@mibrasil.com"
           className="inline-block bg-[#FF6700] text-white px-6 py-3 rounded-md hover:bg-[#e55b00] transition-colors font-medium"
         >
           Falar com o Suporte

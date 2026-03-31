@@ -30,7 +30,7 @@ const faqSections: { title: string; items: FAQItem[] }[] = [
       {
         question: 'Posso alterar ou cancelar meu pedido?',
         answer:
-          'Sim, desde que o pedido ainda não tenha sido enviado. Entre em contato com nosso suporte o mais rápido possível pelo e-mail contato@mibrasil.com.br informando o número do pedido.',
+          'Sim, desde que o pedido ainda não tenha sido enviado. Entre em contato com nosso suporte o mais rápido possível pelo e-mail contato@mibrasil.com informando o número do pedido.',
       },
       {
         question: 'Como acompanho meu pedido?',
@@ -154,7 +154,7 @@ export default function FAQPage() {
           Entre em contato com nosso suporte e teremos prazer em ajudar.
         </p>
         <a
-          href="mailto:contato@mibrasil.com.br"
+          href="mailto:contato@mibrasil.com"
           className="inline-block bg-[#FF6700] text-white px-6 py-3 rounded-md hover:bg-[#e55b00] transition-colors font-medium"
         >
           Falar com o Suporte

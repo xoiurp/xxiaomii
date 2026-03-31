@@ -339,10 +339,10 @@ export default function SupportPage() {
                 <div>
                   <p className="font-medium">E-mail</p>
                   <a
-                    href="mailto:contato@mibrasil.com.br"
+                    href="mailto:contato@mibrasil.com"
                     className="text-[#FF6700] hover:underline"
                   >
-                    contato@mibrasil.com.br
+                    contato@mibrasil.com
                   </a>
                 </div>
               </div>

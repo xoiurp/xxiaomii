@@ -8,7 +8,7 @@ function convertAddress(address: any, isFrom: boolean = false) {
     const fromAddress: any = {
       name: process.env.MELHOR_ENVIO_FROM_NAME || 'Mi Brasil',
       phone: process.env.MELHOR_ENVIO_FROM_PHONE || '11999999999',
-      email: process.env.MELHOR_ENVIO_FROM_EMAIL || 'contato@mibrasil.com.br',
+      email: process.env.MELHOR_ENVIO_FROM_EMAIL || 'contato@mibrasil.com',
       address: process.env.MELHOR_ENVIO_FROM_ADDRESS || 'Rua Exemplo, 123',
       complement: process.env.MELHOR_ENVIO_FROM_COMPLEMENT || '',
       number: process.env.MELHOR_ENVIO_FROM_NUMBER || '123',
@@ -214,7 +214,7 @@ export async function GET() {
       defaultFromAddress: {
         name: 'Mi Brasil',
         phone: '11999999999',
-        email: 'contato@mibrasil.com.br',
+        email: 'contato@mibrasil.com',
         document: '12345678901',
         company_document: '12345678000100',
         address: 'Rua Exemplo, 123',

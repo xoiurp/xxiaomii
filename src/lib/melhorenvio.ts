@@ -96,7 +96,7 @@ const apiClient = axios.create({
     'Authorization': formatToken(TOKEN),
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'User-Agent': 'MiBrasil (contato@mibrasil.com.br)'
+    'User-Agent': 'MiBrasil (contato@mibrasil.com)'
   },
   timeout: 5000 // 5 segundos
 });

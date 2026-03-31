@@ -192,7 +192,7 @@ export default function DashboardPage() {
                 Rastrear Pedido
               </Button>
             </Link>
-            <Link href="mailto:contato@mibrasil.com.br">
+            <Link href="mailto:contato@mibrasil.com">
               <Button variant="outline" className="w-full h-16">
                 <Bell className="h-6 w-6 mr-2" />
                 Suporte

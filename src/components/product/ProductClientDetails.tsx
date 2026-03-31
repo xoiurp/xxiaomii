@@ -190,28 +190,38 @@ export default function ProductClientDetails({
     );
 
     if (mobileHtmlUrlMetafield && mobileHtmlUrlMetafield.value) {
-      const url = mobileHtmlUrlMetafield.value;
-      setIsLoadingMobileHtml(true);
-      setFetchedMobileHtml(undefined); // Limpa o HTML anterior
-      console.log(`ProductClientDetails: Fetching mobile HTML from R2 URL: ${url}`);
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error fetching mobile HTML! status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then(html => {
-          setFetchedMobileHtml(html);
-          console.log("ProductClientDetails: Mobile HTML fetched successfully from R2.");
-        })
-        .catch(error => {
-          console.error("ProductClientDetails: Error fetching mobile HTML from R2:", error);
-          setFetchedMobileHtml(""); // Define como string vazia em caso de erro para evitar usar o HTML desktop
-        })
-        .finally(() => {
-          setIsLoadingMobileHtml(false);
-        });
+      const metafieldValue = mobileHtmlUrlMetafield.value.trim();
+      const isUrl = metafieldValue.startsWith('http://') || metafieldValue.startsWith('https://');
+
+      if (isUrl) {
+        // O metafield contém uma URL (ex: R2) — fazer fetch do conteúdo HTML
+        setIsLoadingMobileHtml(true);
+        setFetchedMobileHtml(undefined);
+        console.log(`ProductClientDetails: Fetching mobile HTML from URL: ${metafieldValue}`);
+        fetch(metafieldValue)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error fetching mobile HTML! status: ${response.status}`);
+            }
+            return response.text();
+          })
+          .then(html => {
+            setFetchedMobileHtml(html);
+            console.log("ProductClientDetails: Mobile HTML fetched successfully from URL.");
+          })
+          .catch(error => {
+            console.error("ProductClientDetails: Error fetching mobile HTML from URL:", error);
+            setFetchedMobileHtml("");
+          })
+          .finally(() => {
+            setIsLoadingMobileHtml(false);
+          });
+      } else {
+        // O metafield contém HTML diretamente — usar como conteúdo
+        console.log("ProductClientDetails: Using mobile HTML directly from metafield value.");
+        setFetchedMobileHtml(metafieldValue);
+        setIsLoadingMobileHtml(false);
+      }
     } else {
       console.log("ProductClientDetails: No mobile_html_url metafield found.");
       setFetchedMobileHtml(undefined); // Garante que o HTML desktop seja usado se não houver URL

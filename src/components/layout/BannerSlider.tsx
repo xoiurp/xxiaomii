@@ -17,8 +17,8 @@ const desktopBanners = [
 
 const mobileBanners = [
   { src: "/assets/images/buds-lite-vertical.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
-  { src: "/assets/images/buds-lite-vertical-1.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
-  { src: "/assets/images/buds-lite-vertical-2.webp", href: "/product/redmi-buds-8-lite", alt: "Redmi Buds 8 Lite" },
+  { src: "/assets/images/buds-lite-vertical-1.webp", href: "/product/redmi-watch-5", alt: "Redmi Watch 5" },
+  { src: "/assets/images/buds-lite-vertical-2.webp", href: "/product/mi-smart-band-10", alt: "Mi Smart Band 10" },
   { src: "/assets/images/Group 178.webp", href: "/shop", alt: "Produtos" },
 ];
 
